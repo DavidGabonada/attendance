@@ -1,8 +1,147 @@
+// "use client";
+// import React, { useState } from 'react';
+// import QRCode from 'qrcode.react';
+
+// const Attendance = () => {
+//   // Static data for dropdowns
+//   const namesData = [
+//     { id: '1', name: 'Alice' },
+//     { id: '2', name: 'Bob' },
+//     { id: '3', name: 'Charlie' }
+//   ];
+
+//   const tribesData = [
+//     { id: '1', tribe: 'Tribe A' },
+//     { id: '2', tribe: 'Tribe B' },
+//     { id: '3', tribe: 'Tribe C' }
+//   ];
+
+//   const yearsData = [
+//     { id: '1', year: 'Freshman' },
+//     { id: '2', year: 'Sophomore' },
+//     { id: '3', year: 'Junior' },
+//     { id: '4', year: 'Senior' }
+//   ];
+
+//   const [names, setNames] = useState(namesData);
+//   const [tribes, setTribes] = useState(tribesData);
+//   const [years, setYears] = useState(yearsData);
+//   const [studentId, setStudentId] = useState('');
+//   const [selectedName, setSelectedName] = useState('');
+//   const [selectedTribe, setSelectedTribe] = useState('');
+//   const [selectedYear, setSelectedYear] = useState('');
+//   const [loginQrValue, setLoginQrValue] = useState(''); // State for login QR code
+//   const [userQrValue, setUserQrValue] = useState(''); // State for user QR code
+
+//   const handleSubmit = (e) => {
+//     e.preventDefault();
+//     // Generate QR codes
+//     const loginQrData = `Login ID: ${studentId}`;
+//     const userQrData = `Student ID: ${studentId}, Year: ${selectedYear}, Tribe: ${selectedTribe}, Name: ${selectedName}`;
+
+//     setLoginQrValue(loginQrData);
+//     setUserQrValue(userQrData);
+//   };
+
+//   return (
+//     <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-blue-100 to-blue-300">
+//       <div className="bg-white p-8 rounded-lg shadow-xl w-full max-w-md">
+//         <h1 className="text-3xl font-extrabold text-gray-900 mb-6">Attendance Form</h1>
+//         <form onSubmit={handleSubmit} className="space-y-6">
+//           <div>
+//             <label htmlFor="year" className="block text-gray-700 font-medium mb-2">Year Level:</label>
+//             <select
+//               id="year"
+//               value={selectedYear}
+//               onChange={(e) => setSelectedYear(e.target.value)}
+//               className="p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-transform duration-150 ease-in-out transform hover:scale-105 w-full"
+//             >
+//               <option value="">Select a year level</option>
+//               {years.map(year => (
+//                 <option key={year.id} value={year.id}>{year.year}</option>
+//               ))}
+//             </select>
+//           </div>
+
+//           <div>
+//             <label htmlFor="tribe" className="block text-gray-700 font-medium mb-2">Tribe:</label>
+//             <select
+//               id="tribe"
+//               value={selectedTribe}
+//               onChange={(e) => setSelectedTribe(e.target.value)}
+//               className="p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-transform duration-150 ease-in-out transform hover:scale-105 w-full"
+//             >
+//               <option value="">Select a tribe</option>
+//               {tribes.map(tribe => (
+//                 <option key={tribe.id} value={tribe.id}>{tribe.tribe}</option>
+//               ))}
+//             </select>
+//           </div>
+
+//           <div>
+//             <label htmlFor="name" className="block text-gray-700 font-medium mb-2">Name:</label>
+//             <select
+//               id="name"
+//               value={selectedName}
+//               onChange={(e) => setSelectedName(e.target.value)}
+//               className="p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-transform duration-150 ease-in-out transform hover:scale-105 w-full"
+//             >
+//               <option value="">Select a name</option>
+//               {names.map(name => (
+//                 <option key={name.id} value={name.id}>{name.name}</option>
+//               ))}
+//             </select>
+//           </div>
+
+//           <div>
+//             <label htmlFor="studentId" className="block text-gray-700 font-medium mb-2">Student ID:</label>
+//             <input
+//               type="text"
+//               id="studentId"
+//               value={studentId}
+//               onChange={(e) => setStudentId(e.target.value)}
+//               placeholder="Enter Student ID"
+//               className="p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-transform duration-150 ease-in-out transform hover:scale-105 w-full"
+//             />
+//           </div>
+
+//           <button
+//             type="submit"
+//             className="w-full py-3 bg-blue-600 text-white rounded-lg shadow-lg hover:bg-blue-700 transition-colors duration-150 ease-in-out transform hover:scale-105"
+//           >
+//             Submit
+//           </button>
+//         </form>
+
+//         {/* Display Login QR Code */}
+//         {loginQrValue && (
+//           <div className="mt-8 text-center">
+//             <h2 className="text-xl font-semibold mb-4">Login QR Code:</h2>
+//             <QRCode value={loginQrValue} size={256} className="mx-auto" />
+//           </div>
+//         )}
+
+//         {/* Display User QR Code */}
+//         {userQrValue && (
+//           <div className="mt-8 text-center">
+//             <h2 className="text-xl font-semibold mb-4">User QR Code:</h2>
+//             <QRCode value={userQrValue} size={256} className="mx-auto" />
+//           </div>
+//         )}
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default Attendance;
+
+
 "use client";
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
 import { FaUserPlus, FaTimes } from 'react-icons/fa';
+import { Package2 } from 'lucide-react';
 import Link from 'next/link';
 
 export default function AttendanceDashboard() {
@@ -135,6 +274,18 @@ export default function AttendanceDashboard() {
         </nav>
       </aside>
 
+      <aside className="fixed inset-y-0 left-0 z-10 hidden w-14 flex-col border-r bg-background sm:flex">
+        <nav className="flex flex-col items-center gap-4 px-2 sm:py-5">
+          <Link
+            href="#"
+            className="group flex h-9 w-9 shrink-0 items-center justify-center gap-2 rounded-full bg-primary text-lg font-semibold text-primary-foreground md:h-8 md:w-8 md:text-base"
+          >
+            <Package2 className="h-4 w-4 transition-all group-hover:scale-110" />
+            <span className="sr-only">Acme Inc</span>
+          </Link>
+        </nav>
+      </aside>
+
       <main className={`flex-1 p-8 bg-gray-100 transition-all duration-300 ${sidebarOpen ? 'ml-64' : 'ml-0'}`}>
         <h1 className="text-3xl font-bold text-gray-900 mb-8">Attendance Dashboard</h1>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -169,58 +320,55 @@ export default function AttendanceDashboard() {
               </button>
             </div>
             <div className="mb-4">
-              <label htmlFor="studentTribu" className="block text-gray-700 font-medium mb-2">Tribu</label>
+              <label className="block text-gray-700 font-medium mb-2">Name</label>
+              <input
+                type="text"
+                className="w-full p-2 border border-gray-300 rounded-lg"
+                value={newStudentName}
+                onChange={(e) => setNewStudentName(e.target.value)}
+              />
+            </div>
+            <div className="mb-4">
+              <label className="block text-gray-700 font-medium mb-2">Student ID</label>
+              <input
+                type="text"
+                className="w-full p-2 border border-gray-300 rounded-lg"
+                value={newStudentId}
+                onChange={(e) => setNewStudentId(e.target.value)}
+              />
+            </div>
+            <div className="mb-4">
+              <label className="block text-gray-700 font-medium mb-2">Year</label>
               <select
-                id="studentTribu"
-                value={newStudentTribu}
-                onChange={(e) => setNewStudentTribu(e.target.value)}
-                className="w-full border border-gray-300 p-2 rounded-lg"
+                className="w-full p-2 border border-gray-300 rounded-lg"
+                value={newStudentYear}
+                onChange={(e) => setNewStudentYear(e.target.value)}
               >
-                <option value="">Select a tribu</option>
-                {tribus.map((tribu, index) => (
-                  <option key={index} value={tribu.name}>{tribu.name}</option>
+                <option value="">Select Year</option>
+                {years.map((year, index) => (
+                  <option key={index} value={year}>
+                    {year}
+                  </option>
                 ))}
               </select>
             </div>
             <div className="mb-4">
-              <label htmlFor="studentName" className="block text-gray-700 font-medium mb-2">Student Name</label>
-              <input
-                id="studentName"
-                type="text"
-                value={newStudentName}
-                onChange={(e) => setNewStudentName(e.target.value)}
-                className="w-full border border-gray-300 p-2 rounded-lg"
-              />
-            </div>
-            <div className="mb-4">
-              <label htmlFor="studentId" className="block text-gray-700 font-medium mb-2">Student ID</label>
-              <input
-                id="studentId"
-                type="text"
-                value={newStudentId}
-                onChange={(e) => setNewStudentId(e.target.value)}
-                className="w-full border border-gray-300 p-2 rounded-lg"
-              />
-            </div>
-            <div className="mb-4">
-              <label htmlFor="studentYear" className="block text-gray-700 font-medium mb-2">Year</label>
+              <label className="block text-gray-700 font-medium mb-2">Tribu</label>
               <select
-                id="studentYear"
-                value={newStudentYear}
-                onChange={(e) => setNewStudentYear(e.target.value)}
-                className="w-full border border-gray-300 p-2 rounded-lg"
+                className="w-full p-2 border border-gray-300 rounded-lg"
+                value={newStudentTribu}
+                onChange={(e) => setNewStudentTribu(e.target.value)}
               >
-                <option value="">Select a year</option>
-                {years.map((year, index) => (
-                  <option key={index} value={year}>{year}</option>
+                <option value="">Select Tribu</option>
+                {tribus.map((tribu, index) => (
+                  <option key={index} value={tribu.name}>
+                    {tribu.name}
+                  </option>
                 ))}
               </select>
             </div>
             <div className="flex justify-end">
-              <button
-                onClick={handleAddStudent}
-                className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
-              >
+              <button onClick={handleAddStudent} className="bg-blue-600 text-white px-4 py-2 rounded-lg">
                 Add Student
               </button>
             </div>
