@@ -1,36 +1,77 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-
-const sampleData = [
-    { name: 'John Doe', yearLevel: 'First Year', timeIn: '08:00 AM', timeOut: '05:00 PM' },
-    { name: 'Jane Smith', yearLevel: 'First Year', timeIn: '09:00 AM', timeOut: '06:00 PM' },
-    { name: 'Alice Johnson', yearLevel: 'First Year', timeIn: '07:30 AM', timeOut: '04:30 PM' },
-];
+import axios from 'axios';
 
 const SupportList = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [filterYearLevel, setFilterYearLevel] = useState('');
+    const [names, setNames] = useState([]);
+    const [tribes, setTribes] = useState([]);
+    const [years, setYears] = useState([]);
     const router = useRouter();
+    const [filteredSupports, setFilteredSupports] = useState([]);
 
-    const filteredSupports = sampleData
-        .filter((support) =>
-            support.name.toLowerCase().includes(searchTerm.toLowerCase())
-        )
-        .filter((support) =>
-            filterYearLevel ? support.yearLevel === filterYearLevel : true
-        );
+    useEffect(() => {
+
+        const fetchTribu = async () => {
+            try {
+                const formData = new FormData();
+                formData.append("operation", "getTribu");
+                const res = await axios.post('http://localhost/tribu/tribu.php', formData);
+                console.log("RES NI TRIBU", JSON.stringify(res.data));
+                setTribes(res.data);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        };
+        const getAllStudentByTribu = async () => {
+            try {
+                const jsonData = { tribuId: 8 };
+                const formData = new FormData();
+                formData.append("operation", "getAllStudentByTribu");
+                formData.append("json", JSON.stringify(jsonData));
+                const res = await axios.post('http://localhost/tribu/students.php', formData);
+                console.log("RES NI GEREGETEGTGETGEG", JSON.stringify(res.data));
+                setNames(res.data);
+                setFilteredSupports(res.data);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        };
+
+        const fetchYear = async () => {
+            try {
+                const formData = new FormData();
+                formData.append("operation", "getyear");
+                const res = await axios.post('http://localhost/tribu/students.php', formData);
+                console.log("RES NI year", JSON.stringify(res.data));
+                setYears(res.data);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        };
+
+        fetchTribu();
+        getAllStudentByTribu();
+        fetchYear();
+    }, []);
 
     const handleLogoClick = () => {
         router.back();
     };
+
+    useEffect(() => {
+        const filteredSupport = names.filter((support) => Number(support.student_yrId) === Number(filterYearLevel));
+        setFilteredSupports(filteredSupport);
+    }, [filterYearLevel])
 
     return (
         <div
             style={{
                 padding: '20px',
                 fontFamily: 'Arial, sans-serif',
-                backgroundImage: 'url(/images/blues.jpg)',
+                backgroundImage: 'url(/images/red.jpg)',
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
                 backgroundAttachment: 'fixed',
@@ -56,7 +97,7 @@ const SupportList = () => {
                 }}
             >
                 <img
-                    src="/images/support.jpg"
+                    src="/images/fighter.jpg"
                     alt="Logo"
                     style={{
                         width: '60px',
@@ -111,8 +152,11 @@ const SupportList = () => {
                         zIndex: 10,
                     }}
                 >
-                    <option value="">All Year Levels</option>
-                    <option value="First Year">First Year</option>
+                    <option value="">Year Level</option>
+                    <option value={1}>First Year</option>
+                    <option value={2}>Second Year</option>
+                    <option value={3}>Third Year</option>
+                    <option value={4}>Fourth Year</option>
                 </select>
             </div>
 
@@ -193,7 +237,7 @@ const SupportList = () => {
                                     color: '#333',
                                 }}
                             >
-                                {item.name}
+                                {item.student_Name}
                             </td>
                             <td
                                 style={{
@@ -203,7 +247,7 @@ const SupportList = () => {
                                     color: '#333',
                                 }}
                             >
-                                {item.yearLevel}
+                                {item.year_type}
                             </td>
                             <td
                                 style={{
@@ -213,7 +257,7 @@ const SupportList = () => {
                                     color: '#333',
                                 }}
                             >
-                                {item.timeIn}
+                                {item.attendance_timein}
                             </td>
                             <td
                                 style={{
@@ -223,7 +267,7 @@ const SupportList = () => {
                                     color: '#333',
                                 }}
                             >
-                                {item.timeOut}
+                                {item.attendance_timeout}
                             </td>
                         </tr>
                     ))}

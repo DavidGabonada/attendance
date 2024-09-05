@@ -6,9 +6,10 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription }
 
 const Reports = () => {
     const [reports, setReports] = useState([]);
-    const [category, setCategory] = useState('Magic');
+    const [category, setCategory] = useState('All Tribes');
     const [loading, setLoading] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
+    const [chartData, setChartData] = useState([]);
 
     useEffect(() => {
         fetchReports();
@@ -17,7 +18,7 @@ const Reports = () => {
     const fetchReports = async () => {
         setLoading(true);
         try {
-            const response = await axios.get('/api/reports', {
+            const response = await axios.post('http://localhost/tribu/users.php', {
                 params: { category },
             });
             if (response.data) {
@@ -34,23 +35,23 @@ const Reports = () => {
         setLoading(false);
     };
 
+
     const handleSearch = () => {
         const filteredReports = reports.filter((report) =>
             report.name.toLowerCase().includes(searchTerm.toLowerCase())
         );
         setReports(filteredReports);
     };
+    useEffect(() => {
+        const filteredStudents = allStudents.filter((student) => student.stud_name = searchTerm);
+        setNames(filteredStudents);
+    }, [searchTerm]);
 
-    const chartData = [
-        { month: "First Year", attendance: 186 },
-        { month: "Second Year", attendance: 305 },
-        { month: "Third Year", attendance: 237 },
-        { month: "Fourth Year", attendance: 273 },
-    ];
+
 
     return (
         <div className="flex flex-col md:flex-row p-8 bg-gradient-to-r from-purple-100 to-blue-100 min-h-screen">
-            {/* Left Side: List of Students */}
+            { }
             <div className="flex-1 bg-white p-8 rounded-xl shadow-xl mb-6 md:mb-0 md:mr-8">
                 <h1 className="text-4xl font-bold text-gray-800 mb-6">Attendance Report</h1>
                 <div className="flex flex-col gap-4 mb-8">
@@ -126,7 +127,7 @@ const Reports = () => {
                     </CardHeader>
                     <CardContent className="pb-0">
                         <div className="flex justify-center">
-                            <RadarChart width={700} height={700} data={chartData}>
+                            <RadarChart width={500} height={500} data={chartData}>
                                 <PolarAngleAxis dataKey="month" tick={{ fontSize: 12 }} />
                                 <PolarGrid />
                                 <Tooltip formatter={(value) => `${value} students`} />

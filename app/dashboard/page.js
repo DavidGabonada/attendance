@@ -2,9 +2,15 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
-import { FaUserPlus, FaTimes } from 'react-icons/fa';
+import { FaUserPlus, FaTimes, FaClipboardList, FaFileAlt } from 'react-icons/fa';
 import { Package2 } from 'lucide-react';
 import Link from 'next/link';
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
+import { HamburgerMenuIcon } from '@radix-ui/react-icons';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 export default function AttendanceDashboard() {
     const [students, setStudents] = useState([]);
@@ -105,73 +111,108 @@ export default function AttendanceDashboard() {
 
     return (
         <div className="flex h-screen overflow-hidden bg-gray-100">
-            <aside className={`fixed top-0 left-0 h-full w-64 bg-gray-800 text-white shadow-lg transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} transition-transform duration-300 md:translate-x-0 md:static`}>
-                <div className="flex items-center justify-between p-4 border-b border-gray-700">
-                    <h2 className="text-lg font-bold">Dashboard</h2>
-                    <button onClick={toggleSidebar} className="text-gray-400 hover:text-white focus:outline-none md:hidden">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 9l6 6 6-6" />
-                        </svg>
-                    </button>
-                </div>
-                <nav className="mt-6">
-                    <ul className="space-y-2">
-                        <li>
-                            <button onClick={() => setIsAddStudentModalOpen(true)} className="flex items-center space-x-2 p-4 bg-green-600 hover:bg-green-700 rounded-lg transition-transform duration-300 transform hover:scale-105">
-                                <FaUserPlus className="text-white" />
-                                <span>Add Student</span>
-                            </button>
-                        </li>
-                        <li>
-                            <button onClick={handleViewAttendance} className="flex items-center space-x-2 p-4 bg-gray-700 hover:bg-gray-600 rounded-lg transition-transform duration-300 transform hover:scale-105">
-                                <span>Attendance</span>
-                            </button>
-                        </li>
-                        <li>
-                            <button onClick={handleViewReports} className="flex items-center space-x-2 p-4 bg-gray-700 hover:bg-gray-600 rounded-lg transition-transform duration-300 transform hover:scale-105">
-                                <span>Attendance Reports</span>
-                            </button>
-                        </li>
-                    </ul>
-                </nav>
-            </aside>
 
-            <aside className="fixed inset-y-0 left-0 z-10 hidden w-14 flex-col border-r bg-background sm:flex">
-                <nav className="flex flex-col items-center gap-4 px-2 sm:py-5">
-                    <Link
-                        href="#"
-                        className="group flex h-9 w-9 shrink-0 items-center justify-center gap-2 rounded-full bg-primary text-lg font-semibold text-primary-foreground md:h-8 md:w-8 md:text-base"
-                    >
-                        <Package2 className="h-4 w-4 transition-all group-hover:scale-110" />
-                        <span className="sr-only">Acme Inc</span>
-                    </Link>
-                </nav>
-            </aside>
+            {/* <aside className={`fixed top-0 left-0 h-full w-64 bg-gray-800 text-white shadow-lg transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} transition-transform duration-300 md:translate-x-0 md:static`}>
+        <div className="flex items-center justify-between p-4 border-b border-gray-700">
+          <h2 className="text-lg font-bold">Dashboard</h2>
+          <button onClick={toggleSidebar} className="text-gray-400 hover:text-white focus:outline-none md:hidden">
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 9l6 6 6-6" />
+            </svg>
+          </button>
+        </div>
+        <nav className="mt-6">
+          <ul className="space-y-2">
+            <li>
+              <button onClick={() => setIsAddStudentModalOpen(true)} className="flex items-center space-x-2 p-4 bg-green-600 hover:bg-green-700 rounded-lg transition-transform duration-300 transform hover:scale-105">
+                <FaUserPlus className="text-white" />
+                <span>Add Student</span>
+              </button>
+            </li>
+            <li>
+              <button onClick={handleViewAttendance} className="flex items-center space-x-2 p-4 bg-gray-700 hover:bg-gray-600 rounded-lg transition-transform duration-300 transform hover:scale-105">
+                <span>Attendance</span>
+              </button>
+            </li>
+            <li>
+              <button onClick={handleViewReports} className="flex items-center space-x-2 p-4 bg-gray-700 hover:bg-gray-600 rounded-lg transition-transform duration-300 transform hover:scale-105">
+                <span>Attendance Reports</span>
+              </button>
+            </li>
+          </ul>
+        </nav>
+      </aside> */}
+
+            <header>
+                <Sheet side="left">
+                    <SheetTrigger asChild>
+                        <Button variant="outline"><HamburgerMenuIcon /> </Button>
+                    </SheetTrigger>
+                    <SheetContent side="left" className="w-9/12">
+                        <div
+                            onClick={() => setIsAddStudentModalOpen(true)}
+                            className="flex items-center space-x-2 p-4 cursor-pointer hover:bg-green-100 rounded-lg transition-transform duration-300 transform hover:scale-105 mt-10"
+                        >
+                            <FaUserPlus className="text-green-600 " />
+                            <span className="text-green-600">Add Student</span>
+                        </div>
+                        <br />
+
+                        <div
+                            onClick={handleViewAttendance}
+                            className="flex items-center space-x-2 p-4 cursor-pointer hover:bg-gray-100 rounded-lg transition-transform duration-300 transform hover:scale-105"
+                        >
+                            <FaClipboardList className="text-gray-700" />
+                            <span className="text-gray-700">Attendance</span>
+                        </div>
+                        <br />
+
+                        <div
+                            onClick={handleViewReports}
+                            className="flex items-center space-x-2 p-4 cursor-pointer hover:bg-gray-100 rounded-lg transition-transform duration-300 transform hover:scale-105"
+                        >
+                            <FaFileAlt className="text-gray-700" />
+                            <span className="text-gray-700">Attendance Reports</span>
+                        </div>
+
+                        <SheetFooter></SheetFooter>
+                    </SheetContent>
+
+
+                </Sheet>
+
+            </header>
 
             <main className={`flex-1 p-8 bg-gray-100 transition-all duration-300 ${sidebarOpen ? 'ml-64' : 'ml-0'}`}>
-                <h1 className="text-3xl font-bold text-gray-900 mb-8">Attendance Dashboard</h1>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    {[
-                        { image: '/images/fighter.jpg', title: 'Fighter', tribu: 'fighter' },
-                        { image: '/images/jungler.jpg', title: 'Jungler', tribu: 'jungler' },
-                        { image: '/images/assassin.jpg', title: 'Assassin', tribu: 'assassin' },
-                        { image: '/images/mage.jpg', title: 'Mage', tribu: 'mage' },
-                        { image: '/images/magic.jpg', title: 'Magic', tribu: 'magic' },
-                        { image: '/images/marksman.jpg', title: 'Marksman', tribu: 'marksman' },
-                        { image: '/images/support.jpg', title: 'Support', tribu: 'support' },
-                        { image: '/images/tank.jpg', title: 'Tank', tribu: 'tank' },
-                    ].map((card, index) => (
-                        <Link key={index} href={`/tribu/${card.tribu}`} passHref>
-                            <div className="relative h-80 bg-white rounded-lg shadow-lg overflow-hidden transition-transform duration-300 transform hover:scale-105">
-                                <img src={card.image} alt={card.title} className="absolute inset-0 w-full h-full object-cover" />
-                                <div className="absolute inset-0 bg-black bg-opacity-50 flex flex-col justify-end p-4">
-                                    <h3 className="text-lg font-semibold text-white">{card.title}</h3>
+                <ScrollArea className="h-full">
+
+
+
+                    <h1 className="text-3xl font-bold text-gray-900 mb-8">Attendance Dashboard</h1>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        {[
+                            { image: '/images/fighter.jpg', title: 'Fighter', tribu: 'fighter' },
+                            { image: '/images/jungler.jpg', title: 'Jungle', tribu: 'jungler' },
+                            { image: '/images/assassin.jpg', title: 'Assassin', tribu: 'assassin' },
+                            { image: '/images/mage.jpg', title: 'Mage', tribu: 'mage' },
+                            { image: '/images/magic.jpg', title: 'Magic', tribu: 'magic' },
+                            { image: '/images/marksman.jpg', title: 'Marksman', tribu: 'marksman' },
+                            { image: '/images/support.jpg', title: 'Support', tribu: 'support' },
+                            { image: '/images/tank.jpg', title: 'Tank', tribu: 'tank' },
+                        ].map((card, index) => (
+                            <Link key={index} href={`/tribu/${card.tribu}`} passHref>
+                                <div className="relative h-80 bg-white rounded-lg shadow-lg overflow-hidden transition-transform duration-300 transform hover:scale-105">
+                                    <img src={card.image} alt={card.title} className="absolute inset-0 w-full h-full object-cover" />
+                                    <div className="absolute inset-0 bg-black bg-opacity-50 flex flex-col justify-end p-4">
+                                        <h3 className="text-lg font-semibold text-white">{card.title}</h3>
+                                    </div>
                                 </div>
-                            </div>
-                        </Link>
-                    ))}
-                </div>
+                            </Link>
+                        ))}
+                    </div>
+                </ScrollArea>
             </main>
+
             {isAddStudentModalOpen && (
                 <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
                     <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-lg">

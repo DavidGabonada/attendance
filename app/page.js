@@ -1,283 +1,156 @@
 "use client";
-import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import React, { useState, useEffect } from 'react';
+import { Form, Button } from 'react-bootstrap';
 import axios from 'axios';
-import { FaUserPlus, FaTimes, FaClipboardList, FaFileAlt } from 'react-icons/fa';
-import { Package2 } from 'lucide-react';
-import Link from 'next/link';
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
-import { HamburgerMenuIcon } from '@radix-ui/react-icons';
-import { ScrollArea } from '@/components/ui/scroll-area';
+import { toast } from 'sonner';
 
-export default function AttendanceDashboard() {
-  const [students, setStudents] = useState([]);
-  const [attendance, setAttendance] = useState({});
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [isAddStudentModalOpen, setIsAddStudentModalOpen] = useState(false);
-  const [newStudentName, setNewStudentName] = useState('');
-  const [newStudentId, setNewStudentId] = useState('');
-  const [newStudentYear, setNewStudentYear] = useState('');
-  const [newStudentTribu, setNewStudentTribu] = useState('');
-  const [tribus, setTribus] = useState([]);
-  const [studentOptions, setStudentOptions] = useState([]);
-
-  const years = ['Year 1', 'Year 2', 'Year 3', 'Year 4'];
+function AuthPage() {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [wholeName, setWholeName] = useState("");
+  const [isRegistering, setIsRegistering] = useState(false);
   const router = useRouter();
 
-  const fetchStudents = async () => {
+  const handleLogin = async (e) => {
+    e.preventDefault();
+
+    if (!username || !password) {
+      toast.error("Please enter username and password");
+      return;
+    }
+
     try {
-      const res = await axios.get('http://localhost/tribu/tribu.php');
-      if (Array.isArray(res.data)) {
-        setStudents(res.data);
-        setStudentOptions(res.data.map(student => ({ id: student.id, name: student.name })));
+      const url = "http://localhost/tribu/users.php";
+      const jsonData = { username, password };
+
+      const formData = new FormData();
+      formData.append("json", JSON.stringify(jsonData));
+
+      const res = await axios.post(url, formData);
+      console.log("Login response:", res.data);
+
+      if (res.data.error) {
+        toast.error(res.data.error);
       } else {
-        console.error('Fetched data is not an array:', res.data);
+        toast.success("Login successful");
+        localStorage.setItem("user", res.data.user_id);
+        localStorage.setItem("user_level", res.data.user_level);
+
+        if (res.data.user_level === "admin") {
+          setTimeout(() => router.push("/dashboard"), 500);
+        } else if (res.data.user_level === "user") {
+          setTimeout(() => router.push("/user"), 500);
+        } else {
+          toast.error("Unrecognized user level");
+        }
       }
     } catch (error) {
-      console.error('Error fetching students', error);
+      if (error.response) {
+        console.log("Response error:", error.response.data);
+        toast.error(`Error: ${error.response.data}`);
+      } else if (error.request) {
+        console.log("Request error:", error.request);
+        toast.error("No response from server");
+      } else {
+        console.log("General error:", error.message);
+        toast.error(`Error: ${error.message}`);
+      }
     }
   };
 
-  const fetchAttendance = async () => {
-    try {
-      const res = await axios.get('http://localhost/tribu/tribu.php');
-      setAttendance(res.data);
-    } catch (error) {
-      console.error('Error fetching attendance', error);
-    }
-  };
+  const handleRegister = async (e) => {
+    e.preventDefault();
 
-  const fetchTribus = async () => {
+    if (!username || !password || !wholeName) {
+      toast.error("Please fill all fields");
+      return;
+    }
+
     try {
-      const res = await axios.get('http://localhost/tribu/tribu.php');
-      if (Array.isArray(res.data)) {
-        setTribus(res.data);
+      const url = "http://localhost/tribu/users.php";
+      const jsonData = { username, password, wholeName };
+
+      const formData = new FormData();
+      formData.append("json", JSON.stringify(jsonData));
+
+      const res = await axios.post(url, formData);
+      console.log("Register response:", res.data);
+
+      if (res.data.error) {
+        toast.error(res.data.error);
       } else {
-        console.error('Fetched tribus data is not an array:', res.data);
+        toast.success("Registration successful. You can now log in.");
+        setIsRegistering(false);
       }
     } catch (error) {
-      console.error('Error fetching tribus', error);
+      if (error.response) {
+        console.log("Response error:", error.response.data);
+        toast.error(`Error: ${error.response.data}`);
+      } else if (error.request) {
+        console.log("Request error:", error.request);
+        toast.error("No response from server");
+      } else {
+        console.log("General error:", error.message);
+        toast.error(`Error: ${error.message}`);
+      }
     }
   };
 
   useEffect(() => {
-    fetchStudents();
-    fetchAttendance();
-    fetchTribus();
+    if (!localStorage.getItem("url")) {
+      localStorage.setItem("url", "http://localhost/tribu/users.php");
+    }
   }, []);
 
-  const handleMarkAttendance = async (studentId) => {
-    try {
-      await axios.post('http://localhost/tribu/tribu.php', { studentId });
-      fetchAttendance();
-    } catch (error) {
-      console.error('Error marking attendance', error);
-    }
-  };
-
-  const handleAddStudent = async () => {
-    try {
-      await axios.post('http://localhost/tribu/tribu.php', {
-        name: newStudentName,
-        studentId: newStudentId,
-        year: newStudentYear,
-        tribu: newStudentTribu
-      });
-      fetchStudents();
-      setNewStudentName('');
-      setNewStudentId('');
-      setNewStudentYear('');
-      setNewStudentTribu('');
-      setIsAddStudentModalOpen(false);
-    } catch (error) {
-      console.error('Error adding student', error);
-    }
-  };
-
-  const toggleSidebar = () => {
-    setSidebarOpen(!sidebarOpen);
-  };
-
-  const handleViewAttendance = () => {
-    router.push('/attendance');
-  };
-
-  const handleViewReports = () => {
-    router.push('/reports');
-  };
-
   return (
-    <div className="flex h-screen overflow-hidden bg-gray-100">
-
-      {/* <aside className={`fixed top-0 left-0 h-full w-64 bg-gray-800 text-white shadow-lg transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} transition-transform duration-300 md:translate-x-0 md:static`}>
-        <div className="flex items-center justify-between p-4 border-b border-gray-700">
-          <h2 className="text-lg font-bold">Dashboard</h2>
-          <button onClick={toggleSidebar} className="text-gray-400 hover:text-white focus:outline-none md:hidden">
-            <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 9l6 6 6-6" />
-            </svg>
-          </button>
-        </div>
-        <nav className="mt-6">
-          <ul className="space-y-2">
-            <li>
-              <button onClick={() => setIsAddStudentModalOpen(true)} className="flex items-center space-x-2 p-4 bg-green-600 hover:bg-green-700 rounded-lg transition-transform duration-300 transform hover:scale-105">
-                <FaUserPlus className="text-white" />
-                <span>Add Student</span>
-              </button>
-            </li>
-            <li>
-              <button onClick={handleViewAttendance} className="flex items-center space-x-2 p-4 bg-gray-700 hover:bg-gray-600 rounded-lg transition-transform duration-300 transform hover:scale-105">
-                <span>Attendance</span>
-              </button>
-            </li>
-            <li>
-              <button onClick={handleViewReports} className="flex items-center space-x-2 p-4 bg-gray-700 hover:bg-gray-600 rounded-lg transition-transform duration-300 transform hover:scale-105">
-                <span>Attendance Reports</span>
-              </button>
-            </li>
-          </ul>
-        </nav>
-      </aside> */}
-
-      <header>
-        <Sheet side="left">
-          <SheetTrigger asChild>
-            <Button variant="outline"><HamburgerMenuIcon /> </Button>
-          </SheetTrigger>
-          <SheetContent side="left" className="w-9/12">
-            <div
-              onClick={() => setIsAddStudentModalOpen(true)}
-              className="flex items-center space-x-2 p-4 cursor-pointer hover:bg-green-100 rounded-lg transition-transform duration-300 transform hover:scale-105 mt-10"
-            >
-              <FaUserPlus className="text-green-600 " />
-              <span className="text-green-600">Add Student</span>
-            </div>
-            <br />
-
-            <div
-              onClick={handleViewAttendance}
-              className="flex items-center space-x-2 p-4 cursor-pointer hover:bg-gray-100 rounded-lg transition-transform duration-300 transform hover:scale-105"
-            >
-              <FaClipboardList className="text-gray-700" />
-              <span className="text-gray-700">Attendance</span>
-            </div>
-            <br />
-
-            <div
-              onClick={handleViewReports}
-              className="flex items-center space-x-2 p-4 cursor-pointer hover:bg-gray-100 rounded-lg transition-transform duration-300 transform hover:scale-105"
-            >
-              <FaFileAlt className="text-gray-700" />
-              <span className="text-gray-700">Attendance Reports</span>
-            </div>
-
-            <SheetFooter></SheetFooter>
-          </SheetContent>
-
-
-        </Sheet>
-
-      </header>
-
-      <main className={`flex-1 p-8 bg-gray-100 transition-all duration-300 ${sidebarOpen ? 'ml-64' : 'ml-0'}`}>
-        <ScrollArea className="h-full">
-
-
-
-          <h1 className="text-3xl font-bold text-gray-900 mb-8">Attendance Dashboard</h1>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[
-              { image: '/images/fighter.jpg', title: 'Fighter', tribu: 'fighter' },
-              { image: '/images/jungler.jpg', title: 'Jungle', tribu: 'jungler' },
-              { image: '/images/assassin.jpg', title: 'Assassin', tribu: 'assassin' },
-              { image: '/images/mage.jpg', title: 'Mage', tribu: 'mage' },
-              { image: '/images/magic.jpg', title: 'Magic', tribu: 'magic' },
-              { image: '/images/marksman.jpg', title: 'Marksman', tribu: 'marksman' },
-              { image: '/images/support.jpg', title: 'Support', tribu: 'support' },
-              { image: '/images/tank.jpg', title: 'Tank', tribu: 'tank' },
-            ].map((card, index) => (
-              <Link key={index} href={`/tribu/${card.tribu}`} passHref>
-                <div className="relative h-80 bg-white rounded-lg shadow-lg overflow-hidden transition-transform duration-300 transform hover:scale-105">
-                  <img src={card.image} alt={card.title} className="absolute inset-0 w-full h-full object-cover" />
-                  <div className="absolute inset-0 bg-black bg-opacity-50 flex flex-col justify-end p-4">
-                    <h3 className="text-lg font-semibold text-white">{card.title}</h3>
-                  </div>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </ScrollArea>
-      </main>
-
-      {isAddStudentModalOpen && (
-        <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-lg">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-2xl font-semibold text-gray-800">Add Student</h2>
-              <button onClick={() => setIsAddStudentModalOpen(false)} className="text-gray-600 hover:text-gray-900">
-                <FaTimes className="text-2xl" />
-              </button>
-            </div>
-            <div className="mb-4">
-              <label className="block text-gray-700 font-medium mb-2">Name</label>
-              <input
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', backgroundColor: '#f0f4f7', padding: '20px' }}>
+      <div style={{ width: '100%', maxWidth: '400px', backgroundColor: '#fff', padding: '20px', borderRadius: '8px', boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)' }}>
+        <h2 className="text-center mb-4">{isRegistering ? "Register" : "Login"}</h2>
+        <Form onSubmit={isRegistering ? handleRegister : handleLogin}>
+          {isRegistering && (
+            <Form.Group controlId="formWholeName" className="mb-3">
+              <Form.Label>Full Name</Form.Label>
+              <Form.Control
                 type="text"
-                className="w-full p-2 border border-gray-300 rounded-lg"
-                value={newStudentName}
-                onChange={(e) => setNewStudentName(e.target.value)}
+                placeholder="Enter your full name"
+                value={wholeName}
+                onChange={(e) => setWholeName(e.target.value)}
               />
-            </div>
-            <div className="mb-4">
-              <label className="block text-gray-700 font-medium mb-2">Student ID</label>
-              <input
-                type="text"
-                className="w-full p-2 border border-gray-300 rounded-lg"
-                value={newStudentId}
-                onChange={(e) => setNewStudentId(e.target.value)}
-              />
-            </div>
-            <div className="mb-4">
-              <label className="block text-gray-700 font-medium mb-2">Year</label>
-              <select
-                className="w-full p-2 border border-gray-300 rounded-lg"
-                value={newStudentYear}
-                onChange={(e) => setNewStudentYear(e.target.value)}
-              >
-                <option value="">Select Year</option>
-                {years.map((year, index) => (
-                  <option key={index} value={year}>
-                    {year}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="mb-4">
-              <label className="block text-gray-700 font-medium mb-2">Tribu</label>
-              <select
-                className="w-full p-2 border border-gray-300 rounded-lg"
-                value={newStudentTribu}
-                onChange={(e) => setNewStudentTribu(e.target.value)}
-              >
-                <option value="">Select Tribu</option>
-                {tribus.map((tribu, index) => (
-                  <option key={index} value={tribu.name}>
-                    {tribu.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="flex justify-end">
-              <button onClick={handleAddStudent} className="bg-blue-600 text-white px-4 py-2 rounded-lg">
-                Add Student
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+            </Form.Group>
+          )}
+          <Form.Group controlId="formUsername" className="mb-3">
+            <Form.Label>Username</Form.Label>
+            <Form.Control
+              type="text"
+              placeholder="Enter username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+            />
+          </Form.Group>
+          <Form.Group controlId="formPassword" className="mb-3">
+            <Form.Label>Password</Form.Label>
+            <Form.Control
+              type="password"
+              placeholder="Enter password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </Form.Group>
+          <Button variant="primary" type="submit" className="w-100 mb-3">
+            {isRegistering ? "Register" : "Login"}
+          </Button>
+        </Form>
+        <Button
+          variant="link"
+          onClick={() => setIsRegistering(!isRegistering)}
+          className="w-100 text-center"
+        >
+          {isRegistering ? "Already have an account? Login" : "Don't have an account? Register"}
+        </Button>
+      </div>
     </div>
   );
 }
+
+export default AuthPage;

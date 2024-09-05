@@ -7,6 +7,7 @@ const Attendance = () => {
     const [names, setNames] = useState([]);
     const [tribes, setTribes] = useState([]);
     const [years, setYears] = useState([]);
+    const [allStudents, setAllStudents] = useState([]);
     const [studentId, setStudentId] = useState('');
     const [selectedName, setSelectedName] = useState('');
     const [selectedTribe, setSelectedTribe] = useState('');
@@ -15,23 +16,50 @@ const Attendance = () => {
 
     useEffect(() => {
 
-        const fetchData = async () => {
+        const fetchTribu = async () => {
             try {
-                const [namesResponse, tribesResponse, yearsResponse] = await Promise.all([
-                    axios.get('/api/names'),
-                    axios.get('/api/tribes'),
-                    axios.get('/api/years')
-                ]);
-
-                setNames(namesResponse.data);
-                setTribes(tribesResponse.data);
-                setYears(yearsResponse.data);
+                const formData = new FormData();
+                formData.append("operation", "getTribu");
+                const res = await axios.post('http://localhost/tribu/tribu.php', formData);
+                console.log("RES NI TRIBU", JSON.stringify(res.data));
+                setTribes(res.data);
             } catch (error) {
                 console.error('Error fetching data:', error);
             }
+            //mana ni
+        };
+        const fetchStudents = async () => {
+            try {
+                const formData = new FormData();
+                formData.append("operation", "getAllStudents");
+                const res = await axios.post('http://localhost/tribu/users.php', formData);
+                console.log("RES NI students", JSON.stringify(res.data));
+                setAllStudents(res.data);
+                setNames(res.data);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+            //mana ni
         };
 
-        fetchData();
+
+
+        const fetchYear = async () => {
+            try {
+                const formData = new FormData();
+                formData.append("operation", "getyear");
+                const res = await axios.post('http://localhost/tribu/students.php', formData);
+                console.log("RES NI year", JSON.stringify(res.data));
+                setYears(res.data);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+            //mana ni
+        };
+
+        fetchTribu();
+        fetchStudents();
+        fetchYear();
     }, []);
 
     const handleSubmit = (e) => {
@@ -40,6 +68,10 @@ const Attendance = () => {
         const qrData = `ID: ${studentId}, Year: ${selectedYear}, Tribe: ${selectedTribe}, Name: ${selectedName}`;
         setQrValue(qrData);
     };
+    useEffect(() => {
+        const filteredStudents = allStudents.filter((student) => Number(student.student_tribuId) === Number(selectedTribe) && Number(student.student_yrId) === Number(selectedYear));
+        setNames(filteredStudents);
+    }, [selectedTribe, selectedYear]);
 
     return (
         <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-blue-100 to-blue-300">
@@ -55,8 +87,8 @@ const Attendance = () => {
                             className="p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-transform duration-150 ease-in-out transform hover:scale-105 w-full"
                         >
                             <option value="">Select a year level</option>
-                            {years.map(year => (
-                                <option key={year.id} value={year.id}>{year.year}</option>
+                            {years.map((year, index) => (
+                                <option key={index} value={year.year_id}>{year.year_type}</option>
                             ))}
                         </select>
                     </div>
@@ -70,8 +102,8 @@ const Attendance = () => {
                             className="p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-transform duration-150 ease-in-out transform hover:scale-105 w-full"
                         >
                             <option value="">Select a tribe</option>
-                            {tribes.map(tribe => (
-                                <option key={tribe.id} value={tribe.id}>{tribe.tribe}</option>
+                            {tribes.map((tribe, index) => (
+                                <option key={index} value={tribe.tribu_Id}>{tribe.tribu_Name}</option>
                             ))}
                         </select>
                     </div>
@@ -85,8 +117,8 @@ const Attendance = () => {
                             className="p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-transform duration-150 ease-in-out transform hover:scale-105 w-full"
                         >
                             <option value="">Select a name</option>
-                            {names.map(name => (
-                                <option key={name.id} value={name.id}>{name.name}</option>
+                            {names.map((name, index) => (
+                                <option key={index} value={name.student_Id}>{name.student_Name}</option>
                             ))}
                         </select>
                     </div>

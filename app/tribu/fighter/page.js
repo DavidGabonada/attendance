@@ -1,29 +1,105 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import axios from 'axios';
 
-const sampleData = [
-    { name: 'John Doe', yearLevel: 'First Year', timeIn: '08:00 AM', timeOut: '05:00 PM' },
-    { name: 'Jane Smith', yearLevel: 'Second Year', timeIn: '09:00 AM', timeOut: '06:00 PM' },
-    { name: 'Alice Johnson', yearLevel: 'Third Year', timeIn: '07:30 AM', timeOut: '04:30 PM' },
-];
+// const sampleData = [
+//     { name: 'John Doe', yearLevel: 'First Year', timeIn: '08:00 AM', timeOut: '05:00 PM' },
+//     { name: 'Jane Smith', yearLevel: 'Second Year', timeIn: '09:00 AM', timeOut: '06:00 PM' },
+//     { name: 'Alice Johnson', yearLevel: 'Third Year', timeIn: '07:30 AM', timeOut: '04:30 PM' },
+// ];
 
 const FighterList = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [filterYearLevel, setFilterYearLevel] = useState('');
+    const [names, setNames] = useState([]);
+    const [tribes, setTribes] = useState([]);
+    const [years, setYears] = useState([]);
     const router = useRouter();
+    const [filteredFighters, setFilteredFighters] = useState([]);
 
-    const filteredFighters = sampleData
-        .filter((fighter) =>
-            fighter.name.toLowerCase().includes(searchTerm.toLowerCase())
-        )
-        .filter((fighter) =>
-            filterYearLevel ? fighter.yearLevel === filterYearLevel : true
-        );
+    useEffect(() => {
 
+        const fetchTribu = async () => {
+            try {
+                const formData = new FormData();
+                formData.append("operation", "getTribu");
+                const res = await axios.post('http://localhost/tribu/tribu.php', formData);
+                console.log("RES NI TRIBU", JSON.stringify(res.data));
+                setTribes(res.data);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+            //mana ni
+        };
+        const getAllStudentByTribu = async () => {
+            try {
+                const jsonData = { tribuId: 5 };
+                const formData = new FormData();
+                formData.append("operation", "getAllStudentByTribu");
+                formData.append("json", JSON.stringify(jsonData));
+                const res = await axios.post('http://localhost/tribu/students.php', formData);
+                console.log("RES NI GEREGETEGTGETGEG", JSON.stringify(res.data));
+                setNames(res.data);
+                setFilteredFighters(res.data);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+            //mana ni
+        };
+
+        const fetchYear = async () => {
+            try {
+                const formData = new FormData();
+                formData.append("operation", "getyear");
+                const res = await axios.post('http://localhost/tribu/students.php', formData);
+                console.log("RES NI year", JSON.stringify(res.data));
+                setYears(res.data);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+            //mana ni
+        };
+        const fetchTimein = async () => {
+            try {
+                const formData = new FormData();
+                formData.append("operation", "getTimein");
+                const res = await axios.post('http://localhost/tribu/students.php', formData);
+                console.log("RES NI year", JSON.stringify(res.data));
+                setYears(res.data);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+            //mana ni
+        };
+
+        // const filteredFighters = names
+        //     .filter((fighter) =>
+        //         fighter.name.toLowerCase().includes(searchTerm.toLowerCase())
+        //     )
+        //     .filter((fighter) =>
+        //         filterYearLevel ? fighter.yearLevel === filterYearLevel : true
+        //     );
+
+
+        // filteredFighters();
+        // handleLogoClick();
+        fetchTribu();
+        getAllStudentByTribu();
+        fetchYear();
+    }, []);
     const handleLogoClick = () => {
         router.back();
     };
+
+    // useffect ni pang filter
+
+    useEffect(() => {
+        const filteredFighter = names.filter((fighter) => Number(fighter.student_yrId) === Number(filterYearLevel));
+        setFilteredFighters(filteredFighter);
+    }, [filterYearLevel])
+
+
 
     return (
         <div
@@ -112,9 +188,10 @@ const FighterList = () => {
                     }}
                 >
                     <option value="">Year Level</option>
-                    <option value="First Year">First Year</option>
-                    <option value="Second Year">Second Year</option>
-                    <option value="Third Year">Third Year</option>
+                    <option value={1}>First Year</option>
+                    <option value={2}>Second Year</option>
+                    <option value={3}>Third Year</option>
+                    <option value={4}>Fourth Year</option>
                 </select>
             </div>
 
@@ -195,7 +272,7 @@ const FighterList = () => {
                                     color: '#333',
                                 }}
                             >
-                                {item.name}
+                                {item.student_Name}
                             </td>
                             <td
                                 style={{
@@ -205,7 +282,7 @@ const FighterList = () => {
                                     color: '#333',
                                 }}
                             >
-                                {item.yearLevel}
+                                {item.year_type}
                             </td>
                             <td
                                 style={{
@@ -215,7 +292,7 @@ const FighterList = () => {
                                     color: '#333',
                                 }}
                             >
-                                {item.timeIn}
+                                {item.attendance_timein}
                             </td>
                             <td
                                 style={{
@@ -225,7 +302,7 @@ const FighterList = () => {
                                     color: '#333',
                                 }}
                             >
-                                {item.timeOut}
+                                {item.attendance_timeout}
                             </td>
                         </tr>
                     ))}
