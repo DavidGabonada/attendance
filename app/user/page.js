@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import QRCode from 'qrcode.react'; // Import QRCode component
+import QRCode from 'qrcode.react';
 
 const Attendance = () => {
     const [names, setNames] = useState([]);
@@ -11,10 +11,10 @@ const Attendance = () => {
     const [selectedName, setSelectedName] = useState('');
     const [selectedTribe, setSelectedTribe] = useState('');
     const [selectedYear, setSelectedYear] = useState('');
-    const [qrValue, setQrValue] = useState(''); // State for QR code
+    const [qrValue, setQrValue] = useState('');
 
     useEffect(() => {
-        // Fetch data for dropdowns
+
         const fetchData = async () => {
             try {
                 const [namesResponse, tribesResponse, yearsResponse] = await Promise.all([
@@ -36,7 +36,7 @@ const Attendance = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        // Generate QR code value based on form inputs
+
         const qrData = `ID: ${studentId}, Year: ${selectedYear}, Tribe: ${selectedTribe}, Name: ${selectedName}`;
         setQrValue(qrData);
     };
@@ -111,7 +111,7 @@ const Attendance = () => {
                     </button>
                 </form>
 
-                {/* Display QR Code if available */}
+                { }
                 {qrValue && (
                     <div className="mt-8 text-center">
                         <h2 className="text-xl font-semibold mb-4">QR Code:</h2>

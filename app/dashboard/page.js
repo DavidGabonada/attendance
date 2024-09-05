@@ -23,7 +23,7 @@ export default function AttendanceDashboard() {
 
     const fetchStudents = async () => {
         try {
-            const res = await axios.get('http://localhost/tribu/tribu.php?action=get_students');
+            const res = await axios.get('http://localhost/tribu/tribu.php');
             if (Array.isArray(res.data)) {
                 setStudents(res.data);
                 setStudentOptions(res.data.map(student => ({ id: student.id, name: student.name })));
@@ -37,7 +37,7 @@ export default function AttendanceDashboard() {
 
     const fetchAttendance = async () => {
         try {
-            const res = await axios.get('http://localhost/tribu/tribu.php?action=get_attendance');
+            const res = await axios.get('http://localhost/tribu/tribu.php');
             setAttendance(res.data);
         } catch (error) {
             console.error('Error fetching attendance', error);
@@ -46,7 +46,7 @@ export default function AttendanceDashboard() {
 
     const fetchTribus = async () => {
         try {
-            const res = await axios.get('http://localhost/tribu/tribu.php?action=get_tribus');
+            const res = await axios.get('http://localhost/tribu/tribu.php');
             if (Array.isArray(res.data)) {
                 setTribus(res.data);
             } else {
@@ -65,7 +65,7 @@ export default function AttendanceDashboard() {
 
     const handleMarkAttendance = async (studentId) => {
         try {
-            await axios.post('http://localhost/tribu/tribu.php?action=mark_attendance', { studentId });
+            await axios.post('http://localhost/tribu/tribu.php', { studentId });
             fetchAttendance();
         } catch (error) {
             console.error('Error marking attendance', error);
@@ -74,7 +74,7 @@ export default function AttendanceDashboard() {
 
     const handleAddStudent = async () => {
         try {
-            await axios.post('http://localhost/tribu/tribu.php?action=add_student', {
+            await axios.post('http://localhost/tribu/tribu.php', {
                 name: newStudentName,
                 studentId: newStudentId,
                 year: newStudentYear,

@@ -1,21 +1,18 @@
 "use client";
 import React, { useState } from 'react';
-import { useRouter } from 'next/navigation'; // Update import for Next.js App Router
+import { useRouter } from 'next/navigation';
 
-// Sample data
 const sampleData = [
     { name: 'John Doe', yearLevel: 'First Year', timeIn: '08:00 AM', timeOut: '05:00 PM' },
     { name: 'Jane Smith', yearLevel: 'Second Year', timeIn: '09:00 AM', timeOut: '06:00 PM' },
     { name: 'Alice Johnson', yearLevel: 'Third Year', timeIn: '07:30 AM', timeOut: '04:30 PM' },
-    // Add more sample data as needed
 ];
 
 const AssassinList = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [filterYearLevel, setFilterYearLevel] = useState('');
-    const router = useRouter(); // Use the updated import
+    const router = useRouter();
 
-    // Filtering logic
     const filteredAssassins = sampleData
         .filter((assassin) =>
             assassin.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -24,9 +21,8 @@ const AssassinList = () => {
             filterYearLevel ? assassin.yearLevel === filterYearLevel : true
         );
 
-    // Handle logo click
     const handleLogoClick = () => {
-        router.back(); // Navigate back to the previous page
+        router.back();
     };
 
     return (
@@ -34,29 +30,29 @@ const AssassinList = () => {
             style={{
                 padding: '20px',
                 fontFamily: 'Arial, sans-serif',
-                backgroundImage: 'url(/images/violet.jpg)', // Set your background image here
-                backgroundSize: 'cover', // Ensure the image covers the entire container
-                backgroundPosition: 'center', // Center the background image
-                backgroundAttachment: 'fixed', // Fix the background image during scroll
+                backgroundImage: 'url(/images/violet.jpg)',
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                backgroundAttachment: 'fixed',
                 borderRadius: '10px',
-                boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)', // Slightly stronger shadow for better effect
-                color: '#fff', // Ensure text is readable on the background
-                minHeight: '100vh', // Ensure the container covers the full viewport height
-                position: 'relative', // To position the overlay
-                overflow: 'hidden', // Prevent scrollbars from appearing
+                boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+                color: '#fff',
+                minHeight: '100vh',
+                position: 'relative',
+                overflow: 'hidden',
             }}
         >
             <div
                 style={{
-                    position: 'sticky', // Stick the header to the top
+                    position: 'sticky',
                     top: 0,
-                    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Slightly dark background for better readability
+                    backgroundColor: 'rgba(0, 0, 0, 0.5)',
                     padding: '10px',
                     display: 'flex',
                     alignItems: 'center',
                     marginBottom: '20px',
-                    borderBottom: '2px solid rgba(255, 255, 255, 0.3)', // Light border for header
-                    zIndex: 1000, // Ensure the header is above other elements
+                    borderBottom: '2px solid rgba(255, 255, 255, 0.3)',
+                    zIndex: 1000,
                 }}
             >
                 <img
@@ -67,15 +63,15 @@ const AssassinList = () => {
                         height: '60px',
                         marginRight: '15px',
                         borderRadius: '50%',
-                        border: '2px solid rgba(255, 255, 255, 0.6)', // Light border for logo
-                        objectFit: 'cover', // Ensures the image covers the entire area
+                        border: '2px solid rgba(255, 255, 255, 0.6)',
+                        objectFit: 'cover',
                     }}
                     onClick={handleLogoClick}
                 />
                 <h1
                     style={{
-                        fontSize: '28px', // Larger title for better prominence
-                        color: '#fff', // Adjust text color to be readable on the background
+                        fontSize: '28px',
+                        color: '#fff',
                     }}
                 >
                     Assassin List
@@ -97,9 +93,9 @@ const AssassinList = () => {
                     style={{
                         padding: '10px',
                         borderRadius: '5px',
-                        border: '1px solid rgba(255, 255, 255, 0.5)', // Light border for search input
-                        width: '220px', // Slightly wider search input
-                        backgroundColor: 'rgba(255, 255, 255, 0.8)', // Light background for readability
+                        border: '1px solid rgba(255, 255, 255, 0.5)',
+                        width: '220px',
+                        backgroundColor: 'rgba(255, 255, 255, 0.8)',
                     }}
                 />
 
@@ -109,10 +105,10 @@ const AssassinList = () => {
                     style={{
                         padding: '10px',
                         borderRadius: '5px',
-                        border: '1px solid rgba(255, 255, 255, 0.5)', // Light border for select
-                        backgroundColor: 'rgba(255, 255, 255, 0.9)', // Light background for readability
-                        color: '#333', // Text color to make it readable
-                        zIndex: 10, // Ensure it appears above other elements
+                        border: '1px solid rgba(255, 255, 255, 0.5)',
+                        backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                        color: '#333',
+                        zIndex: 10,
                     }}
                 >
                     <option value="">All Year Levels</option>
@@ -127,9 +123,9 @@ const AssassinList = () => {
                 style={{
                     width: '100%',
                     borderCollapse: 'collapse',
-                    backgroundColor: 'rgba(255, 255, 255, 0.9)', // Slightly more opaque background for the table
+                    backgroundColor: 'rgba(255, 255, 255, 0.9)',
                     borderRadius: '5px',
-                    overflow: 'hidden', // To ensure rounded corners work properly
+                    overflow: 'hidden',
                 }}
             >
                 <thead>
@@ -141,7 +137,7 @@ const AssassinList = () => {
                                 backgroundColor: '#333',
                                 color: '#fff',
                                 fontWeight: 'bold',
-                                borderBottom: '2px solid rgba(255, 255, 255, 0.3)', // Light border for header cells
+                                borderBottom: '2px solid rgba(255, 255, 255, 0.3)',
                             }}
                         >
                             Name
@@ -153,7 +149,7 @@ const AssassinList = () => {
                                 backgroundColor: '#333',
                                 color: '#fff',
                                 fontWeight: 'bold',
-                                borderBottom: '2px solid rgba(255, 255, 255, 0.3)', // Light border for header cells
+                                borderBottom: '2px solid rgba(255, 255, 255, 0.3)',
                             }}
                         >
                             Year Level
@@ -165,7 +161,7 @@ const AssassinList = () => {
                                 backgroundColor: '#333',
                                 color: '#fff',
                                 fontWeight: 'bold',
-                                borderBottom: '2px solid rgba(255, 255, 255, 0.3)', // Light border for header cells
+                                borderBottom: '2px solid rgba(255, 255, 255, 0.3)',
                             }}
                         >
                             Time In
@@ -177,7 +173,7 @@ const AssassinList = () => {
                                 backgroundColor: '#333',
                                 color: '#fff',
                                 fontWeight: 'bold',
-                                borderBottom: '2px solid rgba(255, 255, 255, 0.3)', // Light border for header cells
+                                borderBottom: '2px solid rgba(255, 255, 255, 0.3)',
                             }}
                         >
                             Time Out
@@ -189,14 +185,14 @@ const AssassinList = () => {
                         <tr
                             key={index}
                             style={{
-                                backgroundColor: index % 2 === 0 ? 'rgba(255, 255, 255, 0.95)' : 'rgba(255, 255, 255, 0.9)', // Slightly different background for alternating rows
+                                backgroundColor: index % 2 === 0 ? 'rgba(255, 255, 255, 0.95)' : 'rgba(255, 255, 255, 0.9)',
                             }}
                         >
                             <td
                                 style={{
                                     padding: '12px',
                                     textAlign: 'left',
-                                    borderBottom: '1px solid rgba(255, 255, 255, 0.3)', // Light border for table cells
+                                    borderBottom: '1px solid rgba(255, 255, 255, 0.3)',
                                     color: '#333',
                                 }}
                             >
@@ -206,7 +202,7 @@ const AssassinList = () => {
                                 style={{
                                     padding: '12px',
                                     textAlign: 'left',
-                                    borderBottom: '1px solid rgba(255, 255, 255, 0.3)', // Light border for table cells
+                                    borderBottom: '1px solid rgba(255, 255, 255, 0.3)',
                                     color: '#333',
                                 }}
                             >
@@ -216,7 +212,7 @@ const AssassinList = () => {
                                 style={{
                                     padding: '12px',
                                     textAlign: 'left',
-                                    borderBottom: '1px solid rgba(255, 255, 255, 0.3)', // Light border for table cells
+                                    borderBottom: '1px solid rgba(255, 255, 255, 0.3)',
                                     color: '#333',
                                 }}
                             >
@@ -226,7 +222,7 @@ const AssassinList = () => {
                                 style={{
                                     padding: '12px',
                                     textAlign: 'left',
-                                    borderBottom: '1px solid rgba(255, 255, 255, 0.3)', // Light border for table cells
+                                    borderBottom: '1px solid rgba(255, 255, 255, 0.3)',
                                     color: '#333',
                                 }}
                             >

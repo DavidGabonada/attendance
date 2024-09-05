@@ -15,7 +15,7 @@ const Attendance = () => {
     useEffect(() => {
         const fetchAttendance = async () => {
             try {
-                const response = await axios.get('http://localhost/tribu/tribu.php?action=get_attendance');
+                const response = await axios.get('http://localhost/tribu/tribu.php');
                 if (Array.isArray(response.data)) {
                     setAttendanceData(response.data);
                     setFilteredData(response.data);

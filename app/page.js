@@ -1,148 +1,16 @@
-// "use client";
-// import React, { useState } from 'react';
-// import QRCode from 'qrcode.react';
-
-// const Attendance = () => {
-//   // Static data for dropdowns
-//   const namesData = [
-//     { id: '1', name: 'Alice' },
-//     { id: '2', name: 'Bob' },
-//     { id: '3', name: 'Charlie' }
-//   ];
-
-//   const tribesData = [
-//     { id: '1', tribe: 'Tribe A' },
-//     { id: '2', tribe: 'Tribe B' },
-//     { id: '3', tribe: 'Tribe C' }
-//   ];
-
-//   const yearsData = [
-//     { id: '1', year: 'Freshman' },
-//     { id: '2', year: 'Sophomore' },
-//     { id: '3', year: 'Junior' },
-//     { id: '4', year: 'Senior' }
-//   ];
-
-//   const [names, setNames] = useState(namesData);
-//   const [tribes, setTribes] = useState(tribesData);
-//   const [years, setYears] = useState(yearsData);
-//   const [studentId, setStudentId] = useState('');
-//   const [selectedName, setSelectedName] = useState('');
-//   const [selectedTribe, setSelectedTribe] = useState('');
-//   const [selectedYear, setSelectedYear] = useState('');
-//   const [loginQrValue, setLoginQrValue] = useState(''); // State for login QR code
-//   const [userQrValue, setUserQrValue] = useState(''); // State for user QR code
-
-//   const handleSubmit = (e) => {
-//     e.preventDefault();
-//     // Generate QR codes
-//     const loginQrData = `Login ID: ${studentId}`;
-//     const userQrData = `Student ID: ${studentId}, Year: ${selectedYear}, Tribe: ${selectedTribe}, Name: ${selectedName}`;
-
-//     setLoginQrValue(loginQrData);
-//     setUserQrValue(userQrData);
-//   };
-
-//   return (
-//     <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-blue-100 to-blue-300">
-//       <div className="bg-white p-8 rounded-lg shadow-xl w-full max-w-md">
-//         <h1 className="text-3xl font-extrabold text-gray-900 mb-6">Attendance Form</h1>
-//         <form onSubmit={handleSubmit} className="space-y-6">
-//           <div>
-//             <label htmlFor="year" className="block text-gray-700 font-medium mb-2">Year Level:</label>
-//             <select
-//               id="year"
-//               value={selectedYear}
-//               onChange={(e) => setSelectedYear(e.target.value)}
-//               className="p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-transform duration-150 ease-in-out transform hover:scale-105 w-full"
-//             >
-//               <option value="">Select a year level</option>
-//               {years.map(year => (
-//                 <option key={year.id} value={year.id}>{year.year}</option>
-//               ))}
-//             </select>
-//           </div>
-
-//           <div>
-//             <label htmlFor="tribe" className="block text-gray-700 font-medium mb-2">Tribe:</label>
-//             <select
-//               id="tribe"
-//               value={selectedTribe}
-//               onChange={(e) => setSelectedTribe(e.target.value)}
-//               className="p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-transform duration-150 ease-in-out transform hover:scale-105 w-full"
-//             >
-//               <option value="">Select a tribe</option>
-//               {tribes.map(tribe => (
-//                 <option key={tribe.id} value={tribe.id}>{tribe.tribe}</option>
-//               ))}
-//             </select>
-//           </div>
-
-//           <div>
-//             <label htmlFor="name" className="block text-gray-700 font-medium mb-2">Name:</label>
-//             <select
-//               id="name"
-//               value={selectedName}
-//               onChange={(e) => setSelectedName(e.target.value)}
-//               className="p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-transform duration-150 ease-in-out transform hover:scale-105 w-full"
-//             >
-//               <option value="">Select a name</option>
-//               {names.map(name => (
-//                 <option key={name.id} value={name.id}>{name.name}</option>
-//               ))}
-//             </select>
-//           </div>
-
-//           <div>
-//             <label htmlFor="studentId" className="block text-gray-700 font-medium mb-2">Student ID:</label>
-//             <input
-//               type="text"
-//               id="studentId"
-//               value={studentId}
-//               onChange={(e) => setStudentId(e.target.value)}
-//               placeholder="Enter Student ID"
-//               className="p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-transform duration-150 ease-in-out transform hover:scale-105 w-full"
-//             />
-//           </div>
-
-//           <button
-//             type="submit"
-//             className="w-full py-3 bg-blue-600 text-white rounded-lg shadow-lg hover:bg-blue-700 transition-colors duration-150 ease-in-out transform hover:scale-105"
-//           >
-//             Submit
-//           </button>
-//         </form>
-
-//         {/* Display Login QR Code */}
-//         {loginQrValue && (
-//           <div className="mt-8 text-center">
-//             <h2 className="text-xl font-semibold mb-4">Login QR Code:</h2>
-//             <QRCode value={loginQrValue} size={256} className="mx-auto" />
-//           </div>
-//         )}
-
-//         {/* Display User QR Code */}
-//         {userQrValue && (
-//           <div className="mt-8 text-center">
-//             <h2 className="text-xl font-semibold mb-4">User QR Code:</h2>
-//             <QRCode value={userQrValue} size={256} className="mx-auto" />
-//           </div>
-//         )}
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default Attendance;
-
-
 "use client";
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
-import { FaUserPlus, FaTimes } from 'react-icons/fa';
+import { FaUserPlus, FaTimes, FaClipboardList, FaFileAlt } from 'react-icons/fa';
 import { Package2 } from 'lucide-react';
 import Link from 'next/link';
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
+import { HamburgerMenuIcon } from '@radix-ui/react-icons';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 export default function AttendanceDashboard() {
   const [students, setStudents] = useState([]);
@@ -161,7 +29,7 @@ export default function AttendanceDashboard() {
 
   const fetchStudents = async () => {
     try {
-      const res = await axios.get('http://localhost/tribu/tribu.php?action=get_students');
+      const res = await axios.get('http://localhost/tribu/tribu.php');
       if (Array.isArray(res.data)) {
         setStudents(res.data);
         setStudentOptions(res.data.map(student => ({ id: student.id, name: student.name })));
@@ -175,7 +43,7 @@ export default function AttendanceDashboard() {
 
   const fetchAttendance = async () => {
     try {
-      const res = await axios.get('http://localhost/tribu/tribu.php?action=get_attendance');
+      const res = await axios.get('http://localhost/tribu/tribu.php');
       setAttendance(res.data);
     } catch (error) {
       console.error('Error fetching attendance', error);
@@ -184,7 +52,7 @@ export default function AttendanceDashboard() {
 
   const fetchTribus = async () => {
     try {
-      const res = await axios.get('http://localhost/tribu/tribu.php?action=get_tribus');
+      const res = await axios.get('http://localhost/tribu/tribu.php');
       if (Array.isArray(res.data)) {
         setTribus(res.data);
       } else {
@@ -203,7 +71,7 @@ export default function AttendanceDashboard() {
 
   const handleMarkAttendance = async (studentId) => {
     try {
-      await axios.post('http://localhost/tribu/tribu.php?action=mark_attendance', { studentId });
+      await axios.post('http://localhost/tribu/tribu.php', { studentId });
       fetchAttendance();
     } catch (error) {
       console.error('Error marking attendance', error);
@@ -212,7 +80,7 @@ export default function AttendanceDashboard() {
 
   const handleAddStudent = async () => {
     try {
-      await axios.post('http://localhost/tribu/tribu.php?action=add_student', {
+      await axios.post('http://localhost/tribu/tribu.php', {
         name: newStudentName,
         studentId: newStudentId,
         year: newStudentYear,
@@ -243,7 +111,8 @@ export default function AttendanceDashboard() {
 
   return (
     <div className="flex h-screen overflow-hidden bg-gray-100">
-      <aside className={`fixed top-0 left-0 h-full w-64 bg-gray-800 text-white shadow-lg transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} transition-transform duration-300 md:translate-x-0 md:static`}>
+
+      {/* <aside className={`fixed top-0 left-0 h-full w-64 bg-gray-800 text-white shadow-lg transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} transition-transform duration-300 md:translate-x-0 md:static`}>
         <div className="flex items-center justify-between p-4 border-b border-gray-700">
           <h2 className="text-lg font-bold">Dashboard</h2>
           <button onClick={toggleSidebar} className="text-gray-400 hover:text-white focus:outline-none md:hidden">
@@ -272,44 +141,78 @@ export default function AttendanceDashboard() {
             </li>
           </ul>
         </nav>
-      </aside>
+      </aside> */}
 
-      <aside className="fixed inset-y-0 left-0 z-10 hidden w-14 flex-col border-r bg-background sm:flex">
-        <nav className="flex flex-col items-center gap-4 px-2 sm:py-5">
-          <Link
-            href="#"
-            className="group flex h-9 w-9 shrink-0 items-center justify-center gap-2 rounded-full bg-primary text-lg font-semibold text-primary-foreground md:h-8 md:w-8 md:text-base"
-          >
-            <Package2 className="h-4 w-4 transition-all group-hover:scale-110" />
-            <span className="sr-only">Acme Inc</span>
-          </Link>
-        </nav>
-      </aside>
+      <header>
+        <Sheet side="left">
+          <SheetTrigger asChild>
+            <Button variant="outline"><HamburgerMenuIcon /> </Button>
+          </SheetTrigger>
+          <SheetContent side="left" className="w-9/12">
+            <div
+              onClick={() => setIsAddStudentModalOpen(true)}
+              className="flex items-center space-x-2 p-4 cursor-pointer hover:bg-green-100 rounded-lg transition-transform duration-300 transform hover:scale-105 mt-10"
+            >
+              <FaUserPlus className="text-green-600 " />
+              <span className="text-green-600">Add Student</span>
+            </div>
+            <br />
+
+            <div
+              onClick={handleViewAttendance}
+              className="flex items-center space-x-2 p-4 cursor-pointer hover:bg-gray-100 rounded-lg transition-transform duration-300 transform hover:scale-105"
+            >
+              <FaClipboardList className="text-gray-700" />
+              <span className="text-gray-700">Attendance</span>
+            </div>
+            <br />
+
+            <div
+              onClick={handleViewReports}
+              className="flex items-center space-x-2 p-4 cursor-pointer hover:bg-gray-100 rounded-lg transition-transform duration-300 transform hover:scale-105"
+            >
+              <FaFileAlt className="text-gray-700" />
+              <span className="text-gray-700">Attendance Reports</span>
+            </div>
+
+            <SheetFooter></SheetFooter>
+          </SheetContent>
+
+
+        </Sheet>
+
+      </header>
 
       <main className={`flex-1 p-8 bg-gray-100 transition-all duration-300 ${sidebarOpen ? 'ml-64' : 'ml-0'}`}>
-        <h1 className="text-3xl font-bold text-gray-900 mb-8">Attendance Dashboard</h1>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {[
-            { image: '/images/fighter.jpg', title: 'Fighter', tribu: 'fighter' },
-            { image: '/images/jungler.jpg', title: 'Jungler', tribu: 'jungler' },
-            { image: '/images/assassin.jpg', title: 'Assassin', tribu: 'assassin' },
-            { image: '/images/mage.jpg', title: 'Mage', tribu: 'mage' },
-            { image: '/images/magic.jpg', title: 'Magic', tribu: 'magic' },
-            { image: '/images/marksman.jpg', title: 'Marksman', tribu: 'marksman' },
-            { image: '/images/support.jpg', title: 'Support', tribu: 'support' },
-            { image: '/images/tank.jpg', title: 'Tank', tribu: 'tank' },
-          ].map((card, index) => (
-            <Link key={index} href={`/tribu/${card.tribu}`} passHref>
-              <div className="relative h-80 bg-white rounded-lg shadow-lg overflow-hidden transition-transform duration-300 transform hover:scale-105">
-                <img src={card.image} alt={card.title} className="absolute inset-0 w-full h-full object-cover" />
-                <div className="absolute inset-0 bg-black bg-opacity-50 flex flex-col justify-end p-4">
-                  <h3 className="text-lg font-semibold text-white">{card.title}</h3>
+        <ScrollArea className="h-full">
+
+
+
+          <h1 className="text-3xl font-bold text-gray-900 mb-8">Attendance Dashboard</h1>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[
+              { image: '/images/fighter.jpg', title: 'Fighter', tribu: 'fighter' },
+              { image: '/images/jungler.jpg', title: 'Jungle', tribu: 'jungler' },
+              { image: '/images/assassin.jpg', title: 'Assassin', tribu: 'assassin' },
+              { image: '/images/mage.jpg', title: 'Mage', tribu: 'mage' },
+              { image: '/images/magic.jpg', title: 'Magic', tribu: 'magic' },
+              { image: '/images/marksman.jpg', title: 'Marksman', tribu: 'marksman' },
+              { image: '/images/support.jpg', title: 'Support', tribu: 'support' },
+              { image: '/images/tank.jpg', title: 'Tank', tribu: 'tank' },
+            ].map((card, index) => (
+              <Link key={index} href={`/tribu/${card.tribu}`} passHref>
+                <div className="relative h-80 bg-white rounded-lg shadow-lg overflow-hidden transition-transform duration-300 transform hover:scale-105">
+                  <img src={card.image} alt={card.title} className="absolute inset-0 w-full h-full object-cover" />
+                  <div className="absolute inset-0 bg-black bg-opacity-50 flex flex-col justify-end p-4">
+                    <h3 className="text-lg font-semibold text-white">{card.title}</h3>
+                  </div>
                 </div>
-              </div>
-            </Link>
-          ))}
-        </div>
+              </Link>
+            ))}
+          </div>
+        </ScrollArea>
       </main>
+
       {isAddStudentModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
           <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-lg">
