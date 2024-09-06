@@ -71,7 +71,7 @@ const TankList = () => {
             style={{
                 padding: '20px',
                 fontFamily: 'Arial, sans-serif',
-                backgroundImage: 'url(/images/red.jpg)',
+                backgroundImage: 'url(/images/brown.jpg)',
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
                 backgroundAttachment: 'fixed',
@@ -97,7 +97,7 @@ const TankList = () => {
                 }}
             >
                 <img
-                    src="/images/fighter.jpg"
+                    src="/images/tank.jpg"
                     alt="Logo"
                     style={{
                         width: '60px',

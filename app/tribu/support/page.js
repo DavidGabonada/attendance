@@ -71,7 +71,7 @@ const SupportList = () => {
             style={{
                 padding: '20px',
                 fontFamily: 'Arial, sans-serif',
-                backgroundImage: 'url(/images/red.jpg)',
+                backgroundImage: 'url(/images/light.jpg)',
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
                 backgroundAttachment: 'fixed',
@@ -97,7 +97,7 @@ const SupportList = () => {
                 }}
             >
                 <img
-                    src="/images/fighter.jpg"
+                    src="/images/support.jpg"
                     alt="Logo"
                     style={{
                         width: '60px',

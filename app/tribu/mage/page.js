@@ -71,7 +71,7 @@ const MageList = () => {
       style={{
         padding: '20px',
         fontFamily: 'Arial, sans-serif',
-        backgroundImage: 'url(/images/red.jpg)',
+        backgroundImage: 'url(/images/blue.webp)',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundAttachment: 'fixed',
@@ -97,7 +97,7 @@ const MageList = () => {
         }}
       >
         <img
-          src="/images/fighter.jpg"
+          src="/images/mage.jpg"
           alt="Logo"
           style={{
             width: '60px',

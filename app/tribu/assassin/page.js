@@ -71,7 +71,7 @@ const AssassinList = () => {
             style={{
                 padding: '20px',
                 fontFamily: 'Arial, sans-serif',
-                backgroundImage: 'url(/images/red.jpg)',
+                backgroundImage: 'url(/images/purple.jpg)',
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
                 backgroundAttachment: 'fixed',
@@ -97,7 +97,7 @@ const AssassinList = () => {
                 }}
             >
                 <img
-                    src="/images/fighter.jpg"
+                    src="/images/assassin.jpg"
                     alt="Logo"
                     style={{
                         width: '60px',

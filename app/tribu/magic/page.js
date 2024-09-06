@@ -71,7 +71,7 @@ const MagicList = () => {
             style={{
                 padding: '20px',
                 fontFamily: 'Arial, sans-serif',
-                backgroundImage: 'url(/images/red.jpg)',
+                backgroundImage: 'url(/images/blues.jpg)',
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
                 backgroundAttachment: 'fixed',
@@ -97,7 +97,7 @@ const MagicList = () => {
                 }}
             >
                 <img
-                    src="/images/fighter.jpg"
+                    src="/images/magic.jpg"
                     alt="Logo"
                     style={{
                         width: '60px',
