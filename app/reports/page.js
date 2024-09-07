@@ -6,23 +6,24 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription }
 
 const Reports = () => {
     const [reports, setReports] = useState([]);
-    const [category, setCategory] = useState('All Tribes');
+    const [category, setCategory] = useState('0');
+    const [year, setYear] = useState('0'); // State for year level filtering
     const [loading, setLoading] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
-    const [chartData, setChartData] = useState([]);
-
-    useEffect(() => {
-        fetchReports();
-    }, [category]);
+    const [allStudents, setAllStudents] = useState([]);
+    const [tribeAttendanceCount, setTribeAttendanceCount] = useState({});
 
     const fetchReports = async () => {
         setLoading(true);
+        const formData = new FormData();
+        formData.append("operation", "getallattendace");
         try {
-            const response = await axios.post('http://localhost/tribu/users.php', {
-                params: { category },
-            });
+            const response = await axios.post('http://localhost/tribu/students.php', formData);
+            console.log("response", response.data);
             if (response.data) {
                 setReports(response.data);
+                setAllStudents(response.data);
+                calculateTribeAttendance(response.data);
             } else {
                 console.error('No data received from API');
                 setReports([]);
@@ -35,23 +36,50 @@ const Reports = () => {
         setLoading(false);
     };
 
+    const calculateTribeAttendance = (students) => {
+        const tribeCount = {};
+        students.forEach(student => {
+            const tribeId = student.student_tribuId;
+            if (!tribeCount[tribeId]) {
+                tribeCount[tribeId] = 1;
+            } else {
+                tribeCount[tribeId]++;
+            }
+        });
+        setTribeAttendanceCount(tribeCount);
+    };
+
+    useEffect(() => {
+        let filteredStudents = allStudents;
+
+        if (category !== "0") {
+            filteredStudents = filteredStudents.filter(student =>
+                parseInt(student.student_tribuId) === parseInt(category)
+            );
+        }
+
+        if (year !== "0") {
+            filteredStudents = filteredStudents.filter(student =>
+                parseInt(student.year_type) === parseInt(year)
+            );
+        }
+
+        setReports(filteredStudents);
+    }, [category, year, allStudents]);
 
     const handleSearch = () => {
-        const filteredReports = reports.filter((report) =>
-            report.name.toLowerCase().includes(searchTerm.toLowerCase())
+        const filteredReports = allStudents.filter((report) =>
+            report.student_Name.toLowerCase().includes(searchTerm.toLowerCase())
         );
         setReports(filteredReports);
     };
+
     useEffect(() => {
-        const filteredStudents = allStudents.filter((student) => student.stud_name = searchTerm);
-        setNames(filteredStudents);
-    }, [searchTerm]);
-
-
+        fetchReports();
+    }, []);
 
     return (
         <div className="flex flex-col md:flex-row p-8 bg-gradient-to-r from-purple-100 to-blue-100 min-h-screen">
-            { }
             <div className="flex-1 bg-white p-8 rounded-xl shadow-xl mb-6 md:mb-0 md:mr-8">
                 <h1 className="text-4xl font-bold text-gray-800 mb-6">Attendance Report</h1>
                 <div className="flex flex-col gap-4 mb-8">
@@ -60,16 +88,30 @@ const Reports = () => {
                         onChange={(e) => setCategory(e.target.value)}
                         className="p-3 border rounded-md text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
                     >
-                        <option value="All">All Tribes</option>
-                        <option value="Magic">Magic</option>
-                        <option value="Mage">Mage</option>
-                        <option value="Fighter">Fighter</option>
-                        <option value="Support">Support</option>
-                        <option value="Assassin">Assassin</option>
-                        <option value="Marksman">Marksman</option>
-                        <option value="Jungler">Jungler</option>
-                        <option value="Tank">Tank</option>
+                        <option value="0">All Tribes ({allStudents.length})</option>
+                        <option value="6">Magic ({tribeAttendanceCount[6] || 0})</option>
+                        <option value="2">Mage ({tribeAttendanceCount[2] || 0})</option>
+                        <option value="5">Fighter ({tribeAttendanceCount[5] || 0})</option>
+                        <option value="8">Support ({tribeAttendanceCount[8] || 0})</option>
+                        <option value="3">Assassin ({tribeAttendanceCount[3] || 0})</option>
+                        <option value="7">Marksman ({tribeAttendanceCount[7] || 0})</option>
+                        <option value="1">Jungler ({tribeAttendanceCount[1] || 0})</option>
+                        <option value="4">Tank ({tribeAttendanceCount[4] || 0})</option>
                     </select>
+
+                    {/* Year level filter */}
+                    <select
+                        value={year}
+                        onChange={(e) => setYear(e.target.value)}
+                        className="p-3 border rounded-md text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    >
+                        <option value="0">All Year Levels</option>
+                        <option value="1">First Year</option>
+                        <option value="2">Second Year</option>
+                        <option value="3">Third Year</option>
+                        <option value="4">Fourth Year</option>
+                    </select>
+
                     <div className="flex">
                         <input
                             type="text"
@@ -104,46 +146,16 @@ const Reports = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {reports.filter(report => report.tribe === category).map((report) => (
-                            <tr key={report.name} className="border-t hover:bg-purple-50 transition-colors duration-200">
-                                <td className="p-4">{report.name}</td>
-                                <td className="p-4">{report.yearLevel}</td>
-                                <td className="p-4">{report.timeIn}</td>
-                                <td className="p-4">{report.timeOut}</td>
+                        {reports.map((report, index) => (
+                            <tr key={index} className="border-t hover:bg-purple-50 transition-colors duration-200">
+                                <td className="p-4">{report.student_Name}</td>
+                                <td className="p-4">{report.year_type}</td>
+                                <td className="p-4">{report.attendance_timein}</td>
+                                <td className="p-4">{report.attendance_timeout}</td>
                             </tr>
                         ))}
                     </tbody>
                 </table>
-            </div>
-
-            {/* Right Side: Radar Chart */}
-            <div className="flex-1 flex justify-center items-center">
-                <Card className="w-full h-full">
-                    <CardHeader className="items-center pb-4">
-                        <CardTitle>{category} Attendance</CardTitle>
-                        <CardDescription>
-                            Showing attendance for the different year levels
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent className="pb-0">
-                        <div className="flex justify-center">
-                            <RadarChart width={500} height={500} data={chartData}>
-                                <PolarAngleAxis dataKey="month" tick={{ fontSize: 12 }} />
-                                <PolarGrid />
-                                <Tooltip formatter={(value) => `${value} students`} />
-                                <Radar name="Attendance" dataKey="attendance" stroke="#8884d8" fill="#8884d8" fillOpacity={0.6} />
-                            </RadarChart>
-                        </div>
-                    </CardContent>
-                    <CardFooter className="flex-col gap-2 text-sm">
-                        <div className="flex items-center gap-2 font-medium leading-none">
-                            Showing attendance for {category}
-                        </div>
-                        <div className="flex items-center gap-2 leading-none text-muted-foreground">
-                            Academic Year Overview
-                        </div>
-                    </CardFooter>
-                </Card>
             </div>
         </div>
     );

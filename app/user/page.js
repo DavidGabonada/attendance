@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import QRCode from 'qrcode.react';
+// import QRCode from 'qrcode.react';
 
 const Attendance = () => {
     const [names, setNames] = useState([]);
@@ -12,7 +12,8 @@ const Attendance = () => {
     const [selectedName, setSelectedName] = useState('');
     const [selectedTribe, setSelectedTribe] = useState('');
     const [selectedYear, setSelectedYear] = useState('');
-    const [qrValue, setQrValue] = useState('');
+    // const [qrValue, setQrValue] = useState('');
+    const [attendance, setAttendance] = useState("");
 
     useEffect(() => {
 
@@ -31,8 +32,8 @@ const Attendance = () => {
         const fetchStudents = async () => {
             try {
                 const formData = new FormData();
-                formData.append("operation", "getAllStudents");
-                const res = await axios.post('http://localhost/tribu/users.php', formData);
+                formData.append("operation", "getStudents");
+                const res = await axios.post('http://localhost/tribu/students.php', formData);
                 console.log("RES NI students", JSON.stringify(res.data));
                 setAllStudents(res.data);
                 setNames(res.data);
@@ -41,6 +42,19 @@ const Attendance = () => {
             }
             //mana ni
         };
+        // const fetchAttendance = async () => {
+        //     try {
+        //         const formData = new FormData();
+        //         formData.append("operation", "getattendance");
+        //         const res = await axios.post('http://localhost/tribu/students.php', formData);
+        //         console.log("RES NI students", JSON.stringify(res.data));
+        //         setAllStudents(res.data);
+        //         setNames(res.data);
+        //     } catch (error) {
+        //         console.error('Error fetching data:', error);
+        //     }
+        //     //mana ni
+        // };
 
 
 
@@ -60,7 +74,41 @@ const Attendance = () => {
         fetchTribu();
         fetchStudents();
         fetchYear();
+        // fetchAttendance();
     }, []);
+
+    const handleAttendance = async (type) => {
+        const currentTime = new Date().toISOString().slice(0, 19).replace('T', ' '); // Get current time in 'YYYY-MM-DD HH:MM:SS' format
+        const apiUrl = 'http://localhost/tribu/students.php';
+
+        try {
+            const jsonData = {
+                studentsId: selectedName,
+                timeout: currentTime,
+            }
+
+            console.log("JSON DATA NI HANDLESAKDJWOPIQH: ", JSON.stringify(jsonData));
+            const formData = new FormData();
+            formData.append("operation", type === "in" ? "getattendance" : "gettimeout");
+            formData.append("json", JSON.stringify(jsonData));
+
+            const res = await axios.post(apiUrl, formData);
+            console.log(`${type === "in" ? "Time In" : "Time Out"} Response`, res.data);
+
+            if (res.data.status === 1) {
+                setAttendance(`${type === "in" ? "Time In" : "Time Out"} recorded successfully!`);
+            } else {
+                setAttendance(`Error recording ${type === "in" ? "Time In" : "Time Out"}: ${res.data.message}`);
+            }
+
+        } catch (error) {
+            console.error(`Error during ${type === "in" ? "Time In" : "Time Out"}:`, error);
+            setAttendance(`Error recording ${type === "in" ? "Time In" : "Time Out"}`);
+        }
+    };
+
+
+
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -72,6 +120,7 @@ const Attendance = () => {
         const filteredStudents = allStudents.filter((student) => Number(student.student_tribuId) === Number(selectedTribe) && Number(student.student_yrId) === Number(selectedYear));
         setNames(filteredStudents);
     }, [selectedTribe, selectedYear]);
+
 
     return (
         <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-blue-100 to-blue-300">
@@ -123,33 +172,26 @@ const Attendance = () => {
                         </select>
                     </div>
 
-                    <div>
-                        <label htmlFor="studentId" className="block text-gray-700 font-medium mb-2">Student ID:</label>
-                        <input
-                            type="text"
-                            id="studentId"
-                            value={studentId}
-                            onChange={(e) => setStudentId(e.target.value)}
-                            placeholder="Enter Student ID"
-                            className="p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-transform duration-150 ease-in-out transform hover:scale-105 w-full"
-                        />
-                    </div>
+                    <button
+                        type="button"
+                        className="w-full py-3 bg-green-600 text-white rounded-lg shadow-lg hover:bg-blue-700 transition-colors duration-150 ease-in-out transform hover:scale-105"
+                        onClick={() => handleAttendance("in")}
+                    >
+                        Time In
+                    </button>
 
                     <button
-                        type="submit"
-                        className="w-full py-3 bg-blue-600 text-white rounded-lg shadow-lg hover:bg-blue-700 transition-colors duration-150 ease-in-out transform hover:scale-105"
+                        type="button"
+                        className="w-full py-3 bg-red-600 text-white rounded-lg shadow-lg hover:bg-orange-700 transition-colors duration-150 ease-in-out transform hover:scale-105"
+                        onClick={() => handleAttendance("out")}
                     >
-                        Submit
+                        Time Out
                     </button>
+
+
                 </form>
 
-                { }
-                {qrValue && (
-                    <div className="mt-8 text-center">
-                        <h2 className="text-xl font-semibold mb-4">QR Code:</h2>
-                        <QRCode value={qrValue} size={256} />
-                    </div>
-                )}
+                {/*  */}
             </div>
         </div>
     );

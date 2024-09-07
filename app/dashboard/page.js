@@ -1,283 +1,164 @@
 "use client";
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { FaUserPlus, FaTimes, FaClipboardList, FaFileAlt } from 'react-icons/fa';
-import { Package2 } from 'lucide-react';
-import Link from 'next/link';
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
-import { HamburgerMenuIcon } from '@radix-ui/react-icons';
-import { ScrollArea } from '@/components/ui/scroll-area';
+import { Radar, RadarChart, PolarGrid, PolarAngleAxis, Tooltip } from 'recharts';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 
-export default function AttendanceDashboard() {
-    const [students, setStudents] = useState([]);
-    const [attendance, setAttendance] = useState({});
-    const [sidebarOpen, setSidebarOpen] = useState(false);
-    const [isAddStudentModalOpen, setIsAddStudentModalOpen] = useState(false);
-    const [newStudentName, setNewStudentName] = useState('');
-    const [newStudentId, setNewStudentId] = useState('');
-    const [newStudentYear, setNewStudentYear] = useState('');
-    const [newStudentTribu, setNewStudentTribu] = useState('');
-    const [tribus, setTribus] = useState([]);
-    const [studentOptions, setStudentOptions] = useState([]);
+const Reports = () => {
+    const [reports, setReports] = useState([]);
+    const [category, setCategory] = useState('0');
+    const [year, setYear] = useState('0'); // State for year level filtering
+    const [loading, setLoading] = useState(false);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [allStudents, setAllStudents] = useState([]);
+    const [tribeAttendanceCount, setTribeAttendanceCount] = useState({});
 
-    const years = ['Year 1', 'Year 2', 'Year 3', 'Year 4'];
-    const router = useRouter();
-
-    const fetchStudents = async () => {
+    const fetchReports = async () => {
+        setLoading(true);
+        const formData = new FormData();
+        formData.append("operation", "getallattendace");
         try {
-            const res = await axios.get('http://localhost/tribu/tribu.php');
-            if (Array.isArray(res.data)) {
-                setStudents(res.data);
-                setStudentOptions(res.data.map(student => ({ id: student.id, name: student.name })));
+            const response = await axios.post('http://localhost/tribu/students.php', formData);
+            console.log("response", response.data);
+            if (response.data) {
+                setReports(response.data);
+                setAllStudents(response.data);
+                calculateTribeAttendance(response.data);
             } else {
-                console.error('Fetched data is not an array:', res.data);
+                console.error('No data received from API');
+                setReports([]);
             }
         } catch (error) {
-            console.error('Error fetching students', error);
+            console.error('Error fetching reports:', error);
+            setReports([]);
+            alert('Failed to fetch reports. Please try again later.');
         }
+        setLoading(false);
     };
 
-    const fetchAttendance = async () => {
-        try {
-            const res = await axios.get('http://localhost/tribu/tribu.php');
-            setAttendance(res.data);
-        } catch (error) {
-            console.error('Error fetching attendance', error);
-        }
-    };
-
-    const fetchTribus = async () => {
-        try {
-            const res = await axios.get('http://localhost/tribu/tribu.php');
-            if (Array.isArray(res.data)) {
-                setTribus(res.data);
+    const calculateTribeAttendance = (students) => {
+        const tribeCount = {};
+        students.forEach(student => {
+            const tribeId = student.student_tribuId;
+            if (!tribeCount[tribeId]) {
+                tribeCount[tribeId] = 1;
             } else {
-                console.error('Fetched tribus data is not an array:', res.data);
+                tribeCount[tribeId]++;
             }
-        } catch (error) {
-            console.error('Error fetching tribus', error);
-        }
+        });
+        setTribeAttendanceCount(tribeCount);
     };
 
     useEffect(() => {
-        fetchStudents();
-        fetchAttendance();
-        fetchTribus();
+        let filteredStudents = allStudents;
+
+        if (category !== "0") {
+            filteredStudents = filteredStudents.filter(student =>
+                parseInt(student.student_tribuId) === parseInt(category)
+            );
+        }
+
+        if (year !== "0") {
+            filteredStudents = filteredStudents.filter(student =>
+                parseInt(student.year_type) === parseInt(year)
+            );
+        }
+
+        setReports(filteredStudents);
+    }, [category, year, allStudents]);
+
+    const handleSearch = () => {
+        const filteredReports = allStudents.filter((report) =>
+            report.student_Name.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+        setReports(filteredReports);
+    };
+
+    useEffect(() => {
+        fetchReports();
     }, []);
 
-    const handleMarkAttendance = async (studentId) => {
-        try {
-            await axios.post('http://localhost/tribu/tribu.php', { studentId });
-            fetchAttendance();
-        } catch (error) {
-            console.error('Error marking attendance', error);
-        }
-    };
-
-    const handleAddStudent = async () => {
-        try {
-            await axios.post('http://localhost/tribu/tribu.php', {
-                name: newStudentName,
-                studentId: newStudentId,
-                year: newStudentYear,
-                tribu: newStudentTribu
-            });
-            fetchStudents();
-            setNewStudentName('');
-            setNewStudentId('');
-            setNewStudentYear('');
-            setNewStudentTribu('');
-            setIsAddStudentModalOpen(false);
-        } catch (error) {
-            console.error('Error adding student', error);
-        }
-    };
-
-    const toggleSidebar = () => {
-        setSidebarOpen(!sidebarOpen);
-    };
-
-    const handleViewAttendance = () => {
-        router.push('/attendance');
-    };
-
-    const handleViewReports = () => {
-        router.push('/reports');
-    };
-
     return (
-        <div className="flex h-screen overflow-hidden bg-gray-100">
+        <div className="flex flex-col md:flex-row p-8 bg-gradient-to-r from-purple-100 to-blue-100 min-h-screen">
+            <div className="flex-1 bg-white p-8 rounded-xl shadow-xl mb-6 md:mb-0 md:mr-8">
+                <h1 className="text-4xl font-bold text-gray-800 mb-6">Attendance Report</h1>
+                <div className="flex flex-col gap-4 mb-8">
+                    <select
+                        value={category}
+                        onChange={(e) => setCategory(e.target.value)}
+                        className="p-3 border rounded-md text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    >
+                        <option value="0">All Tribes ({allStudents.length})</option>
+                        <option value="6">Magic ({tribeAttendanceCount[6] || 0})</option>
+                        <option value="2">Mage ({tribeAttendanceCount[2] || 0})</option>
+                        <option value="5">Fighter ({tribeAttendanceCount[5] || 0})</option>
+                        <option value="8">Support ({tribeAttendanceCount[8] || 0})</option>
+                        <option value="3">Assassin ({tribeAttendanceCount[3] || 0})</option>
+                        <option value="7">Marksman ({tribeAttendanceCount[7] || 0})</option>
+                        <option value="1">Jungler ({tribeAttendanceCount[1] || 0})</option>
+                        <option value="4">Tank ({tribeAttendanceCount[4] || 0})</option>
+                    </select>
 
-            {/* <aside className={`fixed top-0 left-0 h-full w-64 bg-gray-800 text-white shadow-lg transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} transition-transform duration-300 md:translate-x-0 md:static`}>
-        <div className="flex items-center justify-between p-4 border-b border-gray-700">
-          <h2 className="text-lg font-bold">Dashboard</h2>
-          <button onClick={toggleSidebar} className="text-gray-400 hover:text-white focus:outline-none md:hidden">
-            <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 9l6 6 6-6" />
-            </svg>
-          </button>
-        </div>
-        <nav className="mt-6">
-          <ul className="space-y-2">
-            <li>
-              <button onClick={() => setIsAddStudentModalOpen(true)} className="flex items-center space-x-2 p-4 bg-green-600 hover:bg-green-700 rounded-lg transition-transform duration-300 transform hover:scale-105">
-                <FaUserPlus className="text-white" />
-                <span>Add Student</span>
-              </button>
-            </li>
-            <li>
-              <button onClick={handleViewAttendance} className="flex items-center space-x-2 p-4 bg-gray-700 hover:bg-gray-600 rounded-lg transition-transform duration-300 transform hover:scale-105">
-                <span>Attendance</span>
-              </button>
-            </li>
-            <li>
-              <button onClick={handleViewReports} className="flex items-center space-x-2 p-4 bg-gray-700 hover:bg-gray-600 rounded-lg transition-transform duration-300 transform hover:scale-105">
-                <span>Attendance Reports</span>
-              </button>
-            </li>
-          </ul>
-        </nav>
-      </aside> */}
+                    {/* Year level filter */}
+                    <select
+                        value={year}
+                        onChange={(e) => setYear(e.target.value)}
+                        className="p-3 border rounded-md text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    >
+                        <option value="0">All Year Levels</option>
+                        <option value="1">First Year</option>
+                        <option value="2">Second Year</option>
+                        <option value="3">Third Year</option>
+                        <option value="4">Fourth Year</option>
+                    </select>
 
-            <header>
-                <Sheet side="left">
-                    <SheetTrigger asChild>
-                        <Button variant="outline"><HamburgerMenuIcon /> </Button>
-                    </SheetTrigger>
-                    <SheetContent side="left" className="w-9/12">
-                        <div
-                            onClick={() => setIsAddStudentModalOpen(true)}
-                            className="flex items-center space-x-2 p-4 cursor-pointer hover:bg-green-100 rounded-lg transition-transform duration-300 transform hover:scale-105 mt-10"
+                    <div className="flex">
+                        <input
+                            type="text"
+                            placeholder="Search Students"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+                            className="p-3 border rounded-l-md flex-grow text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        />
+                        <button
+                            onClick={handleSearch}
+                            className="p-3 bg-purple-500 text-white rounded-r-md hover:bg-purple-600 transition-all duration-300"
                         >
-                            <FaUserPlus className="text-green-600 " />
-                            <span className="text-green-600">Add Student</span>
-                        </div>
-                        <br />
-
-                        <div
-                            onClick={handleViewAttendance}
-                            className="flex items-center space-x-2 p-4 cursor-pointer hover:bg-gray-100 rounded-lg transition-transform duration-300 transform hover:scale-105"
-                        >
-                            <FaClipboardList className="text-gray-700" />
-                            <span className="text-gray-700">Attendance</span>
-                        </div>
-                        <br />
-
-                        <div
-                            onClick={handleViewReports}
-                            className="flex items-center space-x-2 p-4 cursor-pointer hover:bg-gray-100 rounded-lg transition-transform duration-300 transform hover:scale-105"
-                        >
-                            <FaFileAlt className="text-gray-700" />
-                            <span className="text-gray-700">Attendance Reports</span>
-                        </div>
-
-                        <SheetFooter></SheetFooter>
-                    </SheetContent>
-
-
-                </Sheet>
-
-            </header>
-
-            <main className={`flex-1 p-8 bg-gray-100 transition-all duration-300 ${sidebarOpen ? 'ml-64' : 'ml-0'}`}>
-                <ScrollArea className="h-full">
-
-
-
-                    <h1 className="text-3xl font-bold text-gray-900 mb-8">Attendance Dashboard</h1>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                        {[
-                            { image: '/images/fighter.jpg', title: 'Fighter', tribu: 'fighter' },
-                            { image: '/images/jungler.jpg', title: 'Jungle', tribu: 'jungler' },
-                            { image: '/images/assassin.jpg', title: 'Assassin', tribu: 'assassin' },
-                            { image: '/images/mage.jpg', title: 'Mage', tribu: 'mage' },
-                            { image: '/images/magic.jpg', title: 'Magic', tribu: 'magic' },
-                            { image: '/images/marksman.jpg', title: 'Marksman', tribu: 'marksman' },
-                            { image: '/images/support.jpg', title: 'Support', tribu: 'support' },
-                            { image: '/images/tank.jpg', title: 'Tank', tribu: 'tank' },
-                        ].map((card, index) => (
-                            <Link key={index} href={`/tribu/${card.tribu}`} passHref>
-                                <div className="relative h-80 bg-white rounded-lg shadow-lg overflow-hidden transition-transform duration-300 transform hover:scale-105">
-                                    <img src={card.image} alt={card.title} className="absolute inset-0 w-full h-full object-cover" />
-                                    <div className="absolute inset-0 bg-black bg-opacity-50 flex flex-col justify-end p-4">
-                                        <h3 className="text-lg font-semibold text-white">{card.title}</h3>
-                                    </div>
-                                </div>
-                            </Link>
-                        ))}
-                    </div>
-                </ScrollArea>
-            </main>
-
-            {isAddStudentModalOpen && (
-                <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
-                    <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-lg">
-                        <div className="flex items-center justify-between mb-4">
-                            <h2 className="text-2xl font-semibold text-gray-800">Add Student</h2>
-                            <button onClick={() => setIsAddStudentModalOpen(false)} className="text-gray-600 hover:text-gray-900">
-                                <FaTimes className="text-2xl" />
-                            </button>
-                        </div>
-                        <div className="mb-4">
-                            <label className="block text-gray-700 font-medium mb-2">Name</label>
-                            <input
-                                type="text"
-                                className="w-full p-2 border border-gray-300 rounded-lg"
-                                value={newStudentName}
-                                onChange={(e) => setNewStudentName(e.target.value)}
-                            />
-                        </div>
-                        <div className="mb-4">
-                            <label className="block text-gray-700 font-medium mb-2">Student ID</label>
-                            <input
-                                type="text"
-                                className="w-full p-2 border border-gray-300 rounded-lg"
-                                value={newStudentId}
-                                onChange={(e) => setNewStudentId(e.target.value)}
-                            />
-                        </div>
-                        <div className="mb-4">
-                            <label className="block text-gray-700 font-medium mb-2">Year</label>
-                            <select
-                                className="w-full p-2 border border-gray-300 rounded-lg"
-                                value={newStudentYear}
-                                onChange={(e) => setNewStudentYear(e.target.value)}
-                            >
-                                <option value="">Select Year</option>
-                                {years.map((year, index) => (
-                                    <option key={index} value={year}>
-                                        {year}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-                        <div className="mb-4">
-                            <label className="block text-gray-700 font-medium mb-2">Tribu</label>
-                            <select
-                                className="w-full p-2 border border-gray-300 rounded-lg"
-                                value={newStudentTribu}
-                                onChange={(e) => setNewStudentTribu(e.target.value)}
-                            >
-                                <option value="">Select Tribu</option>
-                                {tribus.map((tribu, index) => (
-                                    <option key={index} value={tribu.name}>
-                                        {tribu.name}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-                        <div className="flex justify-end">
-                            <button onClick={handleAddStudent} className="bg-blue-600 text-white px-4 py-2 rounded-lg">
-                                Add Student
-                            </button>
-                        </div>
+                            Search
+                        </button>
                     </div>
                 </div>
-            )}
+
+                {loading && (
+                    <div className="flex justify-center items-center my-6">
+                        <div className="w-10 h-10 border-4 border-gray-200 border-t-purple-500 rounded-full animate-spin"></div>
+                    </div>
+                )}
+
+                <table className="min-w-full bg-white border rounded-lg shadow-lg text-gray-800">
+                    <thead className="bg-gray-100">
+                        <tr>
+                            <th className="p-4 text-left font-semibold">Name</th>
+                            <th className="p-4 text-left font-semibold">Year Level</th>
+                            <th className="p-4 text-left font-semibold">Time In</th>
+                            <th className="p-4 text-left font-semibold">Time Out</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {reports.map((report, index) => (
+                            <tr key={index} className="border-t hover:bg-purple-50 transition-colors duration-200">
+                                <td className="p-4">{report.student_Name}</td>
+                                <td className="p-4">{report.year_type}</td>
+                                <td className="p-4">{report.attendance_timein}</td>
+                                <td className="p-4">{report.attendance_timeout}</td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
         </div>
     );
-}
+};
+
+export default Reports;

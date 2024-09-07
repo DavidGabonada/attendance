@@ -71,7 +71,7 @@ const AssassinList = () => {
             style={{
                 padding: '20px',
                 fontFamily: 'Arial, sans-serif',
-                backgroundImage: 'url(/images/purple.jpg)',
+                backgroundImage: 'url(/images/violet.jpg)',
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
                 backgroundAttachment: 'fixed',

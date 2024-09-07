@@ -96,13 +96,15 @@ function AuthPage() {
     try {
       const url = "http://localhost/tribu/students.php";
       const jsonData = {
-        username: username,
-        password: password,
-        fullname: wholeName,
-        tribe_id: selectedTribe,
+        fullname: wholeName,          // Use 'name' to match the backend's expectation
+        userId: username,         // Use 'userId' for the username
+        tribe_id: selectedTribe,   // Use 'tribuId' to match PHP's expected field
         yearlevel_id: selectedYear,
         school_id: schoolId,
+        username: username,
+        password: password,      // Use 'yearId' to match PHP's expected field
       }
+
       console.log("JSON DATA: ", JSON.stringify(jsonData));
       const formData = new FormData();
       formData.append("json", JSON.stringify(jsonData));
@@ -113,9 +115,9 @@ function AuthPage() {
       if (res.data === 1) {
         toast.success("Registration successful. You can now log in.");
         setIsRegistering(false);
-        setUsername("")
-        setPassword("")
-        setSchoolId("")
+        setUsername("");
+        setPassword("");
+        setSchoolId("");
       } else {
         toast.error(res.data.error);
       }
@@ -123,6 +125,7 @@ function AuthPage() {
       toast.error(error.message);
     }
   };
+
 
   return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', backgroundColor: '#f0f4f7', padding: '20px' }}>
@@ -168,15 +171,6 @@ function AuthPage() {
               </Form.Group>
             </>
           )}
-          {/* <Form.Group controlId="formSchool" className="mb-3">
-            <Form.Label>School ID</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Enter school ID"
-              value={schoolId}
-              onChange={(e) => setSchoolId(e.target.value)}
-            />
-          </Form.Group> */}
 
 
           <Form.Group controlId="formUsername" className="mb-3">
